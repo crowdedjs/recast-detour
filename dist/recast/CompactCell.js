@@ -1,4 +1,16 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /*
+Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 Recast4J Copyright (c) 2015 Piotr Piastucki piotr@jtilia.org
 
 This software is provided 'as-is', without any express or implied
@@ -16,14 +28,14 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-class Tupple2<T, S> {
+/** Provides information on the content of a cell column in a compact heightfield. */
+var CompactCell = function CompactCell() {
+  _classCallCheck(this, CompactCell);
 
- T first;
- S second;
+  _defineProperty(this, "index", 0);
 
-Tupple2(T first, S second) {
-		this.first = first;
-		this.second = second;
-	}
+  _defineProperty(this, "count", 0);
+};
 
-}
+var _default = CompactCell;
+exports["default"] = _default;

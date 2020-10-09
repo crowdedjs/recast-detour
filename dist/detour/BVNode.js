@@ -1,3 +1,14 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /*
 Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 Recast4J Copyright (c) 2015 Piotr Piastucki piotr@jtilia.org
@@ -17,16 +28,21 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+/**
+ * Bounding volume node.
+ * 
+ * @note This structure is rarely if ever used by the end user.
+ * @see MeshTile
+ */
+var BVNode = function BVNode() {
+  _classCallCheck(this, BVNode);
 
+  _defineProperty(this, "bmin", new Array(3));
 
-class InputGeomProvider {
+  _defineProperty(this, "bmax", new Array(3));
 
-let getMeshBoundsMin();
+  _defineProperty(this, "i", 0);
+};
 
-let getMeshBoundsMax();
-
-	Iterable<TriMesh> meshes();
-
-	List<ConvexVolume> getConvexVolumes();
-
-}
+var _default = BVNode;
+exports["default"] = _default;

@@ -1,8 +1,10 @@
 
 class ConvexVolume {
 
-let verts;
+verts;
  hmin;
  hmax;
-AreaModification areaMod;
+areaMod;
 }
+
+export default ConvexVolume;

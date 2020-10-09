@@ -1,3 +1,14 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /*
 Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 Recast4J Copyright (c) 2015 Piotr Piastucki piotr@jtilia.org
@@ -17,31 +28,27 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+/**
+ * Defines a link between polygons.
+ * 
+ * @note This structure is rarely if ever used by the end user.
+ * @see MeshTile
+ */
+var Link = function Link() {
+  _classCallCheck(this, Link);
 
-// TODO: (PP) Add comments
-class FindPolysAroundResult {
-	refs;
-	parentRefs;
-	costs;
+  _defineProperty(this, "ref", 0);
 
-	constructor(refs, parentRefs, costs) {
-		this.refs = refs;
-		this.parentRefs = parentRefs;
-		this.costs = costs;
-	}
+  _defineProperty(this, "next", 0);
 
-	getRefs() {
-		return this.refs;
-	}
+  _defineProperty(this, "edge", 0);
 
-	getParentRefs() {
-		return this.parentRefs;
-	}
+  _defineProperty(this, "side", 0);
 
-	getCosts() {
-		return this.costs;
-	}
+  _defineProperty(this, "bmin", 0);
 
-}
+  _defineProperty(this, "bmax", 0);
+};
 
-export default FindPolysAroundResult
+var _default = Link;
+exports["default"] = _default;

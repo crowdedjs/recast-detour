@@ -4,42 +4,43 @@
 
 class RecastLayers {
 
-	static  let RC_MAX_LAYERS = RecastConstants.RC_NOT_CONNECTED;
-	static  let RC_MAX_NEIS = 16;
+	static RC_MAX_LAYERS = RecastConstants.RC_NOT_CONNECTED;
+	static RC_MAX_NEIS = 16;
 
-	static class LayerRegion {
-		let id;
-		let layerId;
-		let base;
-		let ymin, ymax;
-		List<Integer> layers;
-		List<Integer> neis;
+	static LayerRegion = class LayerRegion {
+		id;
+		layerId;
+		base;
+		ymin;
+		ymax;
+		layers;
+		neis;
 
-		LayerRegion(i) {
+		constructor(i) {
 			this.id = i;
 			this.ymin = 0xFFFF;
-			layerId = 0xff;
-			layers = [];
-			neis = [];
+			this.layerId = 0xff;
+			this.layers = [];
+			this.neis = [];
 		}
 
 	};
 
-static addUnique(List<Integer> a,  v) {
+	static addUnique(a, v) {
 		if (!a.contains(v)) {
 			a.push(v);
 		}
 	}
 
-static let contains(List<Integer> a,  v) {
+	static contains(a, v) {
 		return a.contains(v);
 	}
 
-static let overlapRange(amin,  amax,  bmin,  bmax) {
+	static overlapRange(amin, amax, bmin, bmax) {
 		return (amin > bmax || amax < bmin) ? false : true;
 	}
 
-static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfield chf,  borderSize,  walkableHeight) {
+	static buildHeightfieldLayers(ctx, chf, borderSize, walkableHeight) {
 
 		ctx.startTimer("RC_TIMER_BUILD_LAYERS");
 		let w = chf.width;
@@ -47,7 +48,7 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		let srcReg = new Array(chf.spanCount);
 		Arrays.fill(srcReg, 0xFF);
 		let nsweeps = chf.width;// Math.max(chf.width, chf.height);
-		SweepSpan[] sweeps = new SweepSpan[nsweeps];
+		let sweeps = new SweepSpan[nsweeps];
 		for (let i = 0; i < sweeps.length; i++) {
 			sweeps[i] = new SweepSpan();
 		}
@@ -55,16 +56,16 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		let prevCount = new Array(256);
 		let regId = 0;
 		// Sweep one line at a time.
-		for(let y = borderSize; y < h - borderSize; ++y) {
+		for (let y = borderSize; y < h - borderSize; ++y) {
 			// Collect spans from this row.
 			Arrays.fill(prevCount, 0, regId, 0);
 			let sweepId = 0;
 
-			for(let x = borderSize; x < w - borderSize; ++x) {
-				CompactCell c = chf.cells[x + y * w];
+			for (let x = borderSize; x < w - borderSize; ++x) {
+				let c = chf.cells[x + y * w];
 
 				for (let i = c.index, ni = c.index + c.count; i < ni; ++i) {
-					CompactSpan s = chf.spans[i];
+					let s = chf.spans[i];
 					if (chf.areas[i] == RecastConstants.RC_NULL_AREA)
 						continue;
 					let sid = 0xFF;
@@ -130,8 +131,8 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 			}
 
 			// Remap local sweep ids to region ids.
-			for(let x = borderSize; x < w - borderSize; ++x) {
-				CompactCell c = chf.cells[x + y * w];
+			for (let x = borderSize; x < w - borderSize; ++x) {
+				let c = chf.cells[x + y * w];
 				for (let i = c.index, ni = c.index + c.count; i < ni; ++i) {
 					if (srcReg[i] != 0xff)
 						srcReg[i] = sweeps[srcReg[i]].id;
@@ -139,7 +140,7 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 			}
 		}
 		let nregs = regId;
-		LayerRegion[] regs = new LayerRegion[nregs];
+		let regs = new LayerRegion[nregs];
 
 		// Construct regions
 		for (let i = 0; i < nregs; ++i) {
@@ -147,15 +148,15 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		}
 
 		// Find region neighbours and overlapping regions.
-		List<Integer> lregs = [];
-		for(let y = 0; y < h; ++y) {
-			for(let x = 0; x < w; ++x) {
-				CompactCell c = chf.cells[x + y * w];
+		let lregs = [];
+		for (let y = 0; y < h; ++y) {
+			for (let x = 0; x < w; ++x) {
+				let c = chf.cells[x + y * w];
 
 				lregs = [];
 
 				for (let i = c.index, ni = c.index + c.count; i < ni; ++i) {
-					CompactSpan s = chf.spans[i];
+					let s = chf.spans[i];
 					let ri = srcReg[i];
 					if (ri == 0xff)
 						continue;
@@ -167,7 +168,7 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 					lregs.push(ri);
 
 					// Update neighbours
-					for(let dir = 0; dir < 4; ++dir) {
+					for (let dir = 0; dir < 4; ++dir) {
 						if (GetCon(s, dir) != RecastConstants.RC_NOT_CONNECTED) {
 							let ax = x + RecastCommon.GetDirOffsetX(dir);
 							let ay = y + RecastCommon.GetDirOffsetY(dir);
@@ -182,10 +183,10 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 
 				// Update overlapping regions.
 				for (let i = 0; i < lregs.length - 1; ++i) {
-					for(let j = i + 1; j < lregs.length; ++j) {
+					for (let j = i + 1; j < lregs.length; ++j) {
 						if (lregs[i].intValue() != lregs[j].intValue()) {
-							LayerRegion ri = regs[lregs[i]];
-							LayerRegion rj = regs[lregs[j]];
+							let ri = regs[lregs[i]];
+							let rj = regs[lregs[j]];
 							addUnique(ri.layers, lregs[j]);
 							addUnique(rj.layers, lregs[i]);
 						}
@@ -198,10 +199,10 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		// Create 2D layers from regions.
 		let layerId = 0;
 
-		List<Integer> stack = [];
+		let stack = [];
 
 		for (let i = 0; i < nregs; ++i) {
-			LayerRegion root = regs[i];
+			let root = regs[i];
 			// Skip already visited.
 			if (root.layerId != 0xff)
 				continue;
@@ -214,10 +215,10 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 
 			while (!stack.length == 0) {
 				// Pop front
-				LayerRegion reg = regs[stack.remove(0)];
+				let reg = regs[stack.remove(0)];
 
-				for(let nei : reg.neis) {
-					LayerRegion regn = regs[nei];
+				for (let nei of reg.neis) {
+					let regn = regs[nei];
 					// Skip already visited.
 					if (regn.layerId != 0xff)
 						continue;
@@ -236,7 +237,7 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 					// Mark layer id
 					regn.layerId = layerId;
 					// Merge current layers to root.
-					for (layer : regn.layers)
+					for (let layer of regn.layers)
 						addUnique(root.layers, layer);
 					root.ymin = Math.min(root.ymin, regn.ymin);
 					root.ymax = Math.max(root.ymax, regn.ymax);
@@ -250,19 +251,19 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		let mergeHeight = walkableHeight * 4;
 
 		for (let i = 0; i < nregs; ++i) {
-			LayerRegion ri = regs[i];
+			let ri = regs[i];
 			if (!ri.base)
 				continue;
 
 			let newId = ri.layerId;
 
-			for(let ;;) {
+			for ( ; ;) {
 				let oldId = 0xff;
 
-				for(let j = 0; j < nregs; ++j) {
+				for (let j = 0; j < nregs; ++j) {
 					if (i == j)
 						continue;
-					LayerRegion rj = regs[j];
+					let rj = regs[j];
 					if (!rj.base)
 						continue;
 
@@ -280,7 +281,7 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 					let overlap = false;
 					// Iterate over all regions which have the same layerId as
 					// 'rj'
-					for(let k = 0; k < nregs; ++k) {
+					for (let k = 0; k < nregs; ++k) {
 						if (regs[k].layerId != rj.layerId)
 							continue;
 						// Check if region 'k' is overlapping region 'ri'
@@ -304,15 +305,15 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 					break;
 
 				// Merge
-				for(let j = 0; j < nregs; ++j) {
-					LayerRegion rj = regs[j];
+				for (let j = 0; j < nregs; ++j) {
+					let rj = regs[j];
 					if (rj.layerId == oldId) {
 						rj.base = false;
 						// Remap layerIds.
 						rj.layerId = newId;
 						// Add overlaid layers from 'rj' to 'ri'.
-						for (layer : rj.layers)
-							addUnique(ri.layers, layer);
+						for (let layer of rj.layers)
+						addUnique(ri.layers, layer);
 						// Update height bounds.
 						ri.ymin = Math.min(ri.ymin, rj.ymin);
 						ri.ymax = Math.max(ri.ymax, rj.ymax);
@@ -351,8 +352,8 @@ static HeightfieldLayerSet buildHeightfieldLayers(Context ctx, CompactHeightfiel
 		let lh = h - borderSize * 2;
 
 		// Build contracted bbox for layers.
-let bmin = new Array(3);
-let bmax = new Array(3);
+		let bmin = new Array(3);
+		let bmax = new Array(3);
 		copy(bmin, chf.bmin);
 		copy(bmax, chf.bmax);
 		bmin[0] += borderSize * chf.cs;
@@ -360,7 +361,7 @@ let bmax = new Array(3);
 		bmax[0] -= borderSize * chf.cs;
 		bmax[2] -= borderSize * chf.cs;
 
-		HeightfieldLayerSet lset = new HeightfieldLayerSet();
+		let lset = new HeightfieldLayerSet();
 		lset.layers = new HeightfieldLayer[layerId];
 		for (let i = 0; i < lset.layers.length; i++) {
 			lset.layers[i] = new HeightfieldLayer();
@@ -370,7 +371,7 @@ let bmax = new Array(3);
 		for (let i = 0; i < lset.layers.length; ++i) {
 			let curId = i;
 
-			HeightfieldLayer layer = lset.layers[i];
+			let layer = lset.layers[i];
 
 			let gridSize = lw * lh;
 
@@ -381,7 +382,7 @@ let bmax = new Array(3);
 
 			// Find layer height bounds.
 			let hmin = 0, hmax = 0;
-			for(let j = 0; j < nregs; ++j) {
+			for (let j = 0; j < nregs; ++j) {
 				if (regs[j].base && regs[j].layerId == curId) {
 					hmin = regs[j].ymin;
 					hmax = regs[j].ymax;
@@ -408,13 +409,13 @@ let bmax = new Array(3);
 			layer.maxy = 0;
 
 			// Copy height and area from compact heightfield.
-			for(let y = 0; y < lh; ++y) {
-				for(let x = 0; x < lw; ++x) {
+			for (let y = 0; y < lh; ++y) {
+				for (let x = 0; x < lw; ++x) {
 					let cx = borderSize + x;
 					let cy = borderSize + y;
-					CompactCell c = chf.cells[cx + cy * w];
-					for(let j = c.index, nj = c.index + c.count; j < nj; ++j) {
-						CompactSpan s = chf.spans[j];
+					let c = chf.cells[cx + cy * w];
+					for (let j = c.index, nj = c.index + c.count; j < nj; ++j) {
+						let s = chf.spans[j];
 						// Skip unassigned regions.
 						if (srcReg[j] == 0xff)
 							continue;
@@ -431,13 +432,13 @@ let bmax = new Array(3);
 
 						// Store height and area type.
 						let idx = x + y * lw;
-						layer.heights[idx] = (char) (s.y - hmin);
+						layer.heights[idx] = (char)(s.y - hmin);
 						layer.areas[idx] = chf.areas[j];
 
 						// Check connection.
-						char portal = 0;
-						char con = 0;
-						for(let dir = 0; dir < 4; ++dir) {
+						let portal = 0;
+						let con = 0;
+						for (let dir = 0; dir < 4; ++dir) {
 							if (GetCon(s, dir) != RecastConstants.RC_NOT_CONNECTED) {
 								let ax = cx + RecastCommon.GetDirOffsetX(dir);
 								let ay = cy + RecastCommon.GetDirOffsetY(dir);
@@ -448,9 +449,9 @@ let bmax = new Array(3);
 									portal |= (1 << dir);
 									// Update height so that it matches on both
 									// sides of the portal.
-									CompactSpan as = chf.spans[ai];
+									let as = chf.spans[ai];
 									if (as.y > hmin)
-										layer.heights[idx] = Math.max(layer.heights[idx], (char) (as.y - hmin));
+										layer.heights[idx] = Math.max(layer.heights[idx], (char)(as.y - hmin));
 								}
 								// Valid connection mask
 								if (chf.areas[ai] != RecastConstants.RC_NULL_AREA && lid == alid) {

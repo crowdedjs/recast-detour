@@ -19,28 +19,30 @@ freely, subject to the following restrictions:
 
 //TODO: (PP) Add comments
 class FindRandomPointResult {
- let status;
- let randomRef;
-let randomPt;
+  status;
+  randomRef;
+ randomPt;
 
-FindRandomPointResult(let status,  randomRef, randomPt) {
+constructor( status,  randomRef, randomPt) {
 		this.status = status;
 		this.randomRef = randomRef;
 		this.randomPt = randomPt;
 	}
 
-let getStatus() {
-		return status;
+getStatus() {
+		return this.status;
 	}
 
 	/// @param[out] randomRef The reference id of the random location.
-let getRandomRef() {
-		return randomRef;
+getRandomRef() {
+		return this.randomRef;
 	}
 
 	/// @param[out] randomPt The random location.
-let getRandomPt() {
-		return randomPt;
+getRandomPt() {
+		return this.randomPt;
 	}
 
 }
+
+export default FindRandomPointResult

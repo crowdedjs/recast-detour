@@ -1,4 +1,16 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /*
+Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 Recast4J Copyright (c) 2015 Piotr Piastucki piotr@jtilia.org
 
 This software is provided 'as-is', without any express or implied
@@ -16,16 +28,18 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-class Tupple3<T, S, U> {
+/** Represents a span in a heightfield. */
+var Span = function Span() {
+  _classCallCheck(this, Span);
 
- T first;
- S second;
- U third;
+  _defineProperty(this, "smin", 0);
 
-Tupple3(T first, S second, U third) {
-		this.first = first;
-		this.second = second;
-		this.third = third;
-	}
+  _defineProperty(this, "smax", 0);
 
-}
+  _defineProperty(this, "area", 0);
+
+  _defineProperty(this, "next", null);
+};
+
+var _default = Span;
+exports["default"] = _default;

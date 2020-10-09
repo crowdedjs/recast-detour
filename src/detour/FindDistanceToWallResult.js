@@ -19,26 +19,28 @@ freely, subject to the following restrictions:
 
 //TODO: (PP) Add comments
 class FindDistanceToWallResult {
-  distance;
-let position;
-let normal;
+	distance;
+	position;
+	normal;
 
-FindDistanceToWallResult( distance, position, normal) {
+	constructor(distance, position, normal) {
 		this.distance = distance;
 		this.position = position;
 		this.normal = normal;
 	}
 
- getDistance() {
-		return distance;
+	getDistance() {
+		return this.distance;
 	}
 
-let getPosition() {
-		return position;
+	getPosition() {
+		return this.position;
 	}
 
-let getNormal() {
-		return normal;
+	getNormal() {
+		return this.normal;
 	}
 
 }
+
+export default FindDistanceToWallResult;
