@@ -1,9 +1,9 @@
-import CrowdAgentParams from "../../detour/crowd/CrowdAgentParams.js"
-import RecastTestMeshBuilder from "../../detour/RecastTestMeshBuilder.js"
-import NavMesh from "../../detour/NavMesh.js"
-import NavMeshQuery from "../../detour/NavMeshQuery.js"
-import Crowd from "../../detour/crowd/Crowd.js"
-import ObstacleAvoidanceParams from "../../detour/crowd/ObstacleAvoidanceParams.js"
+import CrowdAgentParams from "../../src/detour/crowd/CrowdAgentParams.js"
+import RecastTestMeshBuilder from "../../src/detour/RecastTestMeshBuilder.js"
+import NavMesh from "../../src/detour/NavMesh.js"
+import NavMeshQuery from "../../src/detour/NavMeshQuery.js"
+import Crowd from "../../src/detour/crowd/Crowd.js"
+import ObstacleAvoidanceParams from "../../src/detour/crowd/ObstacleAvoidanceParams.js"
 
 class CrowdSimApp {
 
