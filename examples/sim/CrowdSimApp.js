@@ -5,7 +5,15 @@
 // import Crowd from "../../src/detour/crowd/Crowd.js"
 // import ObstacleAvoidanceParams from "../../src/detour/crowd/ObstacleAvoidanceParams.js"
 
-import {CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams} from "../../src/Main.js"
+//import {CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams} from "../../src/Main.js"
+
+let CrowdAgentParams = recastdetourjs.CrowdAgentParams;
+let RecastTestMeshBuilder = recastdetourjs.RecastTestMeshBuilder;
+let NavMesh = recastdetourjs.NavMesh;
+let NavMeshQuery = recastdetourjs.NavMeshQuery;
+let Crowd = recastdetourjs.Crowd;
+let ObstacleAvoidanceParams = recastdetourjs.ObstacleAvoidanceParams;
+
 
 class CrowdSimApp {
 
