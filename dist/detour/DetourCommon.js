@@ -541,9 +541,9 @@ var DetourCommon = /*#__PURE__*/function () {
         var vpj = new _VectorPtr["default"](verts, j * 3);
         var edge = DetourCommon.vSub(new _VectorPtr["default"](verts, i * 3), vpj);
         var diff = DetourCommon.vSub(p0v, vpj);
-        var n = DetourCommon.vDot2D(edge, diff);
+        var n = DetourCommon.vPerp2D(edge, diff);
 
-        var _d2 = DetourCommon.vDot2D(dir, edge);
+        var _d2 = DetourCommon.vPerp2D(dir, edge);
 
         if (Math.abs(_d2) < EPS) {
           // S is nearly parallel to this edge

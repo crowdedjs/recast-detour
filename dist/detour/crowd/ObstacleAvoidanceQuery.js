@@ -188,13 +188,13 @@ var ObstacleAvoidanceQuery = /*#__PURE__*/function () {
 
       var w = _DetourCommon["default"].vSub(ap, bp);
 
-      var d = _DetourCommon["default"].vDot2D(u, v);
+      var d = _DetourCommon["default"].vPerp2D(u, v);
 
       if (Math.abs(d) < 1e-6) return [false, 0];
       d = 1.0 / d;
-      var t = _DetourCommon["default"].vDot2D(v, w) * d;
+      var t = _DetourCommon["default"].vPerp2D(v, w) * d;
       if (t < 0 || t > 1) return [false, 0];
-      var s = _DetourCommon["default"].vDot2D(u, w) * d;
+      var s = _DetourCommon["default"].vPerp2D(u, w) * d;
       if (s < 0 || s > 1) return [false, 0];
       return [true, t];
     }

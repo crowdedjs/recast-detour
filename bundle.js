@@ -652,8 +652,8 @@ var recastdetourjs = (function (exports) {
 				let vpj = new VectorPtr$1(verts, j * 3);
 				let edge = DetourCommon.vSub(new VectorPtr$1(verts, i * 3), vpj);
 				let diff = DetourCommon.vSub(p0v, vpj);
-				let n = DetourCommon.vDot2D(edge, diff);
-				let d = DetourCommon.vDot2D(dir, edge);
+				let n = DetourCommon.vPerp2D(edge, diff);
+				let d = DetourCommon.vPerp2D(dir, edge);
 				if (Math.abs(d) < EPS) {
 					// S is nearly parallel to this edge
 					if (n < 0)
@@ -15007,14 +15007,14 @@ var recastdetourjs = (function (exports) {
 		isectRaySeg(ap, u, bp, bq) {
 			let v = DetourCommon.vSub(bq, bp);
 			let w = DetourCommon.vSub(ap, bp);
-			let d = DetourCommon.vDot2D(u, v);
+			let d = DetourCommon.vPerp2D(u, v);
 			if (Math.abs(d) < 1e-6)
 			return [false, 0];
 				d = 1.0 / d;
-			let t = DetourCommon.vDot2D(v, w) * d;
+			let t = DetourCommon.vPerp2D(v, w) * d;
 			if (t < 0 || t > 1)
 				return [false, 0];
-			let s = DetourCommon.vDot2D(u, w) * d;
+			let s = DetourCommon.vPerp2D(u, w) * d;
 			if (s < 0 || s > 1)
 				return [false, 0];
 			return [true, t];
@@ -17325,7 +17325,7 @@ var recastdetourjs = (function (exports) {
 	    static COLLISION_RESOLVE_FACTOR = 0.7;
 
 	    update(dt, debug, frame) {
-	        if (frame == 4)
+	        if (frame == 114)
 	            console.log("Bug");
 	        this.m_velocitySampleCount = 0;
 

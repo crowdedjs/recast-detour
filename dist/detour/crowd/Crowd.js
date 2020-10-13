@@ -828,7 +828,7 @@ var Crowd = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(dt, debug, frame) {
-      if (frame == 4) console.log("Bug");
+      if (frame == 114) console.log("Bug");
       this.m_velocitySampleCount = 0;
       var debugIdx = debug != null ? debug.idx : -1;
       var agents = this.getActiveAgents(); // Check that all agents still have valid paths.
