@@ -739,7 +739,7 @@ class Crowd {
     static COLLISION_RESOLVE_FACTOR = 0.7;
 
     update(dt, debug, frame) {
-        if (frame == 4)
+        if (frame == 114)
             console.log("Bug");
         this.m_velocitySampleCount = 0;
 

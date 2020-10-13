@@ -513,8 +513,8 @@ class DetourCommon {
 			let vpj = new VectorPtr(verts, j * 3);
 			let edge = DetourCommon.vSub(new VectorPtr(verts, i * 3), vpj);
 			let diff = DetourCommon.vSub(p0v, vpj);
-			let n = DetourCommon.vDot2D(edge, diff);
-			let d = DetourCommon.vDot2D(dir, edge);
+			let n = DetourCommon.vPerp2D(edge, diff);
+			let d = DetourCommon.vPerp2D(dir, edge);
 			if (Math.abs(d) < EPS) {
 				// S is nearly parallel to this edge
 				if (n < 0)
