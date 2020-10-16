@@ -1,5 +1,5 @@
-import {CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams} from "../../src/Main.js"
-
+import { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } from "../../../src/Main.js"
+import fs from "fs";
 
 
 class CrowdSimApp {
@@ -15,7 +15,7 @@ class CrowdSimApp {
     /**
      * Fields required to run the open source backend. There is no need to touch these.
      */
-    md;
+    //md;
     navmesh;
 
     outStream;
@@ -23,10 +23,7 @@ class CrowdSimApp {
 
 
     bootMesh(objFileContents) {
-
-
         this.nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
-        //.log(JSON.stringify(this.nmd, null, 2));
         this.navmesh = new NavMesh(this.nmd, 6, 0);
         this.query = new NavMeshQuery(this.navmesh);
         this.crowd = new Crowd(500, 0.6, this.navmesh);
@@ -75,9 +72,12 @@ class CrowdSimApp {
     }
 
     writeAgentPosition(currentMillisecond) {
-        for(let j = 0; j < CrowdSimApp.agents.length; j++) {
+        if (!this.outStream) {
+            this.outStream = fs.createWriteStream("out.csv")
+        }
+        for (let j = 0; j < CrowdSimApp.agents.length; j++) {
             let agent = CrowdSimApp.agents[j];
-            if(agent.idx != 0 && !agent.idx) continue;
+            if (agent.idx != 0 && !agent.idx) continue;
             let idx = agent.idx;
             let x = this.crowd.getAgent(idx).npos[0];
             let y = this.crowd.getAgent(idx).npos[1];
