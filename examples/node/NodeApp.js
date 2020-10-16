@@ -2,18 +2,20 @@ import CrowdSimApp from "./sim/CrowdSimApp.js"
 import Agent from "./sim/Agent.js"
 import Vector3 from "./behavior/Vector3.js"
 import fs, { write } from "fs";
+import path from "path";
+
 
 class NodeApp extends CrowdSimApp {
   constructor() {
     super();
-    let obj = fs.readFileSync("../objs/hospital.obj", "utf-8");
+    let obj = fs.readFileSync(path.join(process.cwd(), "/examples/objs/hospital.obj"), "utf-8");
     //Boot simulation tells Recast to load the scene
 
     this.bootMesh(obj);
 
     //Path is the path to the file where we will store our results
     //Currently, this is out.csv.
-    let result = fs.readFileSync("../agentStarts/one.csv", "utf-8");
+    let result = fs.readFileSync(path.join(process.cwd(), "/examples/agentStarts/one.csv"), "utf-8");
 
     let stream = result.split('\n');
     stream.forEach(l => l.trim().length > 0 ? CrowdSimApp.agents.push(new Agent(l)) : 0 == 0);

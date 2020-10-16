@@ -1,5 +1,10 @@
 import { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } from "../../../src/Main.js"
 import fs from "fs";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 class CrowdSimApp {
@@ -19,8 +24,6 @@ class CrowdSimApp {
     navmesh;
 
     outStream;
-
-
 
     bootMesh(objFileContents) {
         this.nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
