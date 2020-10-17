@@ -1,5 +1,8 @@
-var recastdetourjs = (function (exports) {
-	'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.recastdetourjs = {}));
+}(this, (function (exports) { 'use strict';
 
 	/*
 	Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
@@ -17710,6 +17713,6 @@ var recastdetourjs = (function (exports) {
 	exports.ObstacleAvoidanceParams = ObstacleAvoidanceParams;
 	exports.RecastTestMeshBuilder = RecastTestMeshBuilder;
 
-	return exports;
+	Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
+})));
