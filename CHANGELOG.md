@@ -1,3 +1,9 @@
+#### 0.1.6 (2020-10-17)
+
+##### Bug Fixes
+
+*  Point index to umd bundle ([27bc224c](https://github.com/ricksteam/recastdetourjs/commit/27bc224cd5ae0da3b1799fcc746ee57dee12c36e))
+
 #### 0.1.5 (2020-10-17)
 
 ##### New Features
