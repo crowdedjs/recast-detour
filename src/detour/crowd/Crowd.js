@@ -739,8 +739,8 @@ class Crowd {
     static COLLISION_RESOLVE_FACTOR = 0.7;
 
     update(dt, debug, frame) {
-        if (frame == 114)
-            console.log("Bug");
+        // if (frame == 114)
+        //     console.log("Bug");
         this.m_velocitySampleCount = 0;
 
         let debugIdx = debug != null ? debug.idx : -1;
@@ -948,9 +948,9 @@ class Crowd {
                     this.m_obstacleQuery.addCircle(nei.npos, nei.params.radius, nei.vel, nei.dvel);
                 }
 
-                if (ag.neis.length > 0 && i == 0) {
-                    console.log("Frame " + frame)
-                }
+                // if (ag.neis.length > 0 && i == 0) {
+                //     console.log("Frame " + frame)
+                // }
 
                 // Append neighbour segments as obstacles.
                 for (let j = 0; j < ag.boundary.getSegmentCount(); ++j) {
@@ -1062,8 +1062,8 @@ class Crowd {
         }
 
         for (let i = 0; i < agents.length; ++i) {
-            if (frame == 492)
-                console.log("Bad agent")
+            // if (frame == 492)
+            //     console.log("Bad agent")
             let ag = agents[i];
             if (ag.state != CrowdAgent.DT_CROWDAGENT_STATE_WALKING) {
                 continue;

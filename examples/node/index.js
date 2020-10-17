@@ -1,2 +1,2 @@
 import NodeApp from "./NodeApp.js"
-new NodeApp();
+new NodeApp("hospital.obj", "nine.csv", 500).go();

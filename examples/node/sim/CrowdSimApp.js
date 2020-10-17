@@ -74,9 +74,9 @@ class CrowdSimApp {
         return ap;
     }
 
-    writeAgentPosition(currentMillisecond) {
+    writeAgentPosition(currentMillisecond, objFilename, agentStartsFilename, ticks) {
         if (!this.outStream) {
-            this.outStream = fs.createWriteStream("out.csv")
+            this.outStream = fs.createWriteStream(`${objFilename}-${agentStartsFilename}-${ticks}-out.csv`,{emitClose:true})
         }
         for (let j = 0; j < CrowdSimApp.agents.length; j++) {
             let agent = CrowdSimApp.agents[j];

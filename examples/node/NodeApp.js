@@ -3,26 +3,38 @@ import Agent from "./sim/Agent.js"
 import Vector3 from "./behavior/Vector3.js"
 import fs, { write } from "fs";
 import path from "path";
+import util from "util";
+import stream from "stream";
+
+
 
 
 class NodeApp extends CrowdSimApp {
-  constructor() {
+  constructor(objString, agentStartsString, ticks) {
     super();
-    let obj = fs.readFileSync(path.join(process.cwd(), "/examples/objs/hospital.obj"), "utf-8");
+    this.objFilename = objString;
+    this.agentStartsFilename = agentStartsString;
+    this.ticks = ticks;
+    
+    //this.go();
+
+  }
+  async go(){
+    let obj = fs.readFileSync(path.join(process.cwd(), "/examples/objs/" + this.objFilename), "utf-8");
     //Boot simulation tells Recast to load the scene
 
     this.bootMesh(obj);
 
     //Path is the path to the file where we will store our results
     //Currently, this is out.csv.
-    let result = fs.readFileSync(path.join(process.cwd(), "/examples/agentStarts/one.csv"), "utf-8");
+    let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
     stream.forEach(l => l.trim().length > 0 ? CrowdSimApp.agents.push(new Agent(l)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time
     let millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
-    let secondsOfSimulation = 500; //How long should the simulation run? Change this to whatever you want.
+    let secondsOfSimulation = this.ticks; //How long should the simulation run? Change this to whatever you want.
     for (let i = 0; i < secondsOfSimulation; i++) {
       if (i < 1) {
         // initialize all agent's id
@@ -71,23 +83,32 @@ class NodeApp extends CrowdSimApp {
           }
 
         }
-        if (j == 0) {
-          if (CrowdSimApp.agents[j].idx != 0 && !CrowdSimApp.agents[j].idx) continue
-          if (!CrowdSimApp.agents[j].inSimulation) continue;
-          let idx = CrowdSimApp.agents[j].idx;
-          let x = this.crowd.getAgent(idx).npos[0];
-          if (Number.isNaN(x)) continue;
-          let y = this.crowd.getAgent(idx).npos[1];
-          let z = this.crowd.getAgent(idx).npos[2];
-          console.log(`${i} ${this.crowd.m_agents[0].boundary.m_center[0]} ${this.crowd.m_agents[0].boundary.m_center[2]} ${x} ${z}`);
-        }
+        // if (j == 0) {
+        //   if (CrowdSimApp.agents[j].idx != 0 && !CrowdSimApp.agents[j].idx) continue
+        //   if (!CrowdSimApp.agents[j].inSimulation) continue;
+        //   let idx = CrowdSimApp.agents[j].idx;
+        //   let x = this.crowd.getAgent(idx).npos[0];
+        //   if (Number.isNaN(x)) continue;
+        //   let y = this.crowd.getAgent(idx).npos[1];
+        //   let z = this.crowd.getAgent(idx).npos[2];
+        //   console.log(`${i} ${this.crowd.m_agents[0].boundary.m_center[0]} ${this.crowd.m_agents[0].boundary.m_center[2]} ${x} ${z}`);
+        // }
       }
       this.crowd.update(1 / 25.0, null, i);
 
       //Update the current simulation time
-      this.writeAgentPosition(currentMillisecond);
+      this.writeAgentPosition(currentMillisecond, this.objFilename, this.agentStartsFilename, this.ticks);
       currentMillisecond += millisecondsBetweenFrames;
     }
+    await this.finish();
+  }
+  async finish() {
+    //From https://nodesource.com/blog/understanding-streams-in-nodejs/
+    const finished = util.promisify(stream.finished); // (A)
+
+    this.outStream.end();
+    await finished(this.outStream);
+    console.log("Ended outStream")
   }
   truncate(num) {
     if (num > 0)
