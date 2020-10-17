@@ -828,7 +828,8 @@ var Crowd = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(dt, debug, frame) {
-      if (frame == 114) console.log("Bug");
+      // if (frame == 114)
+      //     console.log("Bug");
       this.m_velocitySampleCount = 0;
       var debugIdx = debug != null ? debug.idx : -1;
       var agents = this.getActiveAgents(); // Check that all agents still have valid paths.
@@ -1064,11 +1065,10 @@ var Crowd = /*#__PURE__*/function () {
           for (var j = 0; j < _ag8.neis.length; ++j) {
             var _nei = agents[_ag8.neis[j].idx];
             this.m_obstacleQuery.addCircle(_nei.npos, _nei.params.radius, _nei.vel, _nei.dvel);
-          }
-
-          if (_ag8.neis.length > 0 && _i5 == 0) {
-            console.log("Frame " + frame);
-          } // Append neighbour segments as obstacles.
+          } // if (ag.neis.length > 0 && i == 0) {
+          //     console.log("Frame " + frame)
+          // }
+          // Append neighbour segments as obstacles.
 
 
           for (var _j = 0; _j < _ag8.boundary.getSegmentCount(); ++_j) {
@@ -1193,7 +1193,8 @@ var Crowd = /*#__PURE__*/function () {
       }
 
       for (var _i9 = 0; _i9 < agents.length; ++_i9) {
-        if (frame == 492) console.log("Bad agent");
+        // if (frame == 492)
+        //     console.log("Bad agent")
         var _ag12 = agents[_i9];
 
         if (_ag12.state != _CrowdAgent["default"].DT_CROWDAGENT_STATE_WALKING) {

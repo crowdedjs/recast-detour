@@ -2512,20 +2512,20 @@ var recastdetourjs = (function (exports) {
 	                s += "" + i + " " + item.bmax[0] + " " + item.bmax[1] + "\n";
 	            }
 	            // fs.writeFileSync("items_" + imin + "_" + imax + ".txt", s);
-	            console.log("done");
+	            // console.log("done")
 
 	            // Left
-	            console.log("Before left " + imin + " " + isplit);
-	            console.log(items[279].bmin[1]);
+	            // console.log("Before left " + imin + " " + isplit);
+	            // console.log(items[279].bmin[1])
 	            this.subdivide(items, imin, isplit, trisPerChunk, nodes, inTris);
-	            console.log("Done left " + imin + " " + isplit);
-	            console.log(items[279].bmin[1]);
+	            // console.log("Done left " + imin + " " + isplit);
+	            // console.log(items[279].bmin[1])
 	            // Right
-	            console.log("Before right " + isplit + " " + imax);
-	            console.log(items[279].bmin[1]);
+	            // console.log("Before right " + isplit + " " + imax);
+	            // console.log(items[279].bmin[1])
 	            this.subdivide(items, isplit, imax, trisPerChunk, nodes, inTris);
-	            console.log("Done right " + isplit + " " + imax);
-	            console.log(items[279].bmin[1]);
+	            // console.log("Done right " + isplit + " " + imax);
+	            // console.log(items[279].bmin[1])
 
 	            // Negative index means escape.
 	            node.i = -nodes.length;
@@ -17325,8 +17325,8 @@ var recastdetourjs = (function (exports) {
 	    static COLLISION_RESOLVE_FACTOR = 0.7;
 
 	    update(dt, debug, frame) {
-	        if (frame == 114)
-	            console.log("Bug");
+	        // if (frame == 114)
+	        //     console.log("Bug");
 	        this.m_velocitySampleCount = 0;
 
 	        let debugIdx = debug != null ? debug.idx : -1;
@@ -17532,9 +17532,9 @@ var recastdetourjs = (function (exports) {
 	                    this.m_obstacleQuery.addCircle(nei.npos, nei.params.radius, nei.vel, nei.dvel);
 	                }
 
-	                if (ag.neis.length > 0 && i == 0) {
-	                    console.log("Frame " + frame);
-	                }
+	                // if (ag.neis.length > 0 && i == 0) {
+	                //     console.log("Frame " + frame)
+	                // }
 
 	                // Append neighbour segments as obstacles.
 	                for (let j = 0; j < ag.boundary.getSegmentCount(); ++j) {
@@ -17638,8 +17638,8 @@ var recastdetourjs = (function (exports) {
 	        }
 
 	        for (let i = 0; i < agents.length; ++i) {
-	            if (frame == 492)
-	                console.log("Bad agent");
+	            // if (frame == 492)
+	            //     console.log("Bad agent")
 	            let ag = agents[i];
 	            if (ag.state != CrowdAgent.DT_CROWDAGENT_STATE_WALKING) {
 	                continue;

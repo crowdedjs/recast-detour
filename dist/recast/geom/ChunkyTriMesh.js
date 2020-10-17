@@ -156,21 +156,21 @@ var ChunkyTriMesh = /*#__PURE__*/function () {
           s += "" + _i + " " + item.bmin[0] + " " + item.bmin[1] + "\n";
           s += "" + _i + " " + item.bmax[0] + " " + item.bmax[1] + "\n";
         } // fs.writeFileSync("items_" + imin + "_" + imax + ".txt", s);
+        // console.log("done")
+        // Left
+        // console.log("Before left " + imin + " " + isplit);
+        // console.log(items[279].bmin[1])
 
 
-        console.log("done"); // Left
+        this.subdivide(items, imin, isplit, trisPerChunk, nodes, inTris); // console.log("Done left " + imin + " " + isplit);
+        // console.log(items[279].bmin[1])
+        // Right
+        // console.log("Before right " + isplit + " " + imax);
+        // console.log(items[279].bmin[1])
 
-        console.log("Before left " + imin + " " + isplit);
-        console.log(items[279].bmin[1]);
-        this.subdivide(items, imin, isplit, trisPerChunk, nodes, inTris);
-        console.log("Done left " + imin + " " + isplit);
-        console.log(items[279].bmin[1]); // Right
-
-        console.log("Before right " + isplit + " " + imax);
-        console.log(items[279].bmin[1]);
-        this.subdivide(items, isplit, imax, trisPerChunk, nodes, inTris);
-        console.log("Done right " + isplit + " " + imax);
-        console.log(items[279].bmin[1]); // Negative index means escape.
+        this.subdivide(items, isplit, imax, trisPerChunk, nodes, inTris); // console.log("Done right " + isplit + " " + imax);
+        // console.log(items[279].bmin[1])
+        // Negative index means escape.
 
         node.i = -nodes.length;
       }
