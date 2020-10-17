@@ -30,6 +30,7 @@ class NodeApp extends CrowdSimApp {
     let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
+    Agent.index = 0;
     stream.forEach(l => l.trim().length > 0 ? CrowdSimApp.agents.push(new Agent(l)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time

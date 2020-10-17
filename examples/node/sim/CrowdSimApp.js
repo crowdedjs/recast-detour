@@ -25,6 +25,10 @@ class CrowdSimApp {
 
     outStream;
 
+    constructor(){
+        CrowdSimApp.agents = [];
+    }
+
     bootMesh(objFileContents) {
         this.nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
         this.navmesh = new NavMesh(this.nmd, 6, 0);
