@@ -1,1 +1,1 @@
-module.exports = require("./dist/Main.js");
+module.exports = require("./bundle.js");
