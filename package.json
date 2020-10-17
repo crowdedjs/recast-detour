@@ -11,7 +11,7 @@
     "build": "npx babel --config-file ./.babelrc.mjs src -d dist",
     "rollup": "npx rollup ./src/Main.js --file bundle.js --format iife --name recastdetourjs",
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
-    "everything:patch": "npm run build && npm run rollup && npm run release:patch"
+    "prerelease:patch": "npm run build && npm run rollup"
   },
   "repository": {
     "type": "git",
