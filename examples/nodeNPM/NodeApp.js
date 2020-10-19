@@ -15,7 +15,7 @@ class NodeApp {
   ap;
   navmesh;
 
-  outStream;
+  outStream; //Where we write the results
 
   constructor(objString, agentStartsString, ticks) {
     this.agents = [];
@@ -33,20 +33,13 @@ class NodeApp {
     let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
-    stream.forEach(l => l.trim().length > 0 ? this.agents.push(this.newAgent(l)) : 0 == 0);
+    stream.forEach((l,index) => l.trim().length > 0 ? this.agents.push(this.newAgent(l,index)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time
     let millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
     let secondsOfSimulation = this.ticks; //How long should the simulation run? Change this to whatever you want.
     for (let i = 0; i < secondsOfSimulation; i++) {
-      if (i < 1) {
-        // initialize all agent's id
-        for (let id = 0; id < this.agents.length; id++) {
-          let agent = this.agents[id];
-          this.setId(agent, id);
-        }
-      }
-
+      
       for (let j = 0; j < this.agents.length; j++) {
         let agent = this.agents[j]; //Grab each agent in the list
 
@@ -168,12 +161,12 @@ class NodeApp {
         this.outStream.write("" + j + "," + currentMillisecond + "," + x + "," + y + "," + z + "\n");
     }
   }
-  newAgent(l) {
+  newAgent(l,index) {
     let splits = l.split(",");
     if (splits.length == 0 || splits.length < 8)
       console.log("Error")
 
-    let toReturn = {};
+    let toReturn = {id:index};
     toReturn.startX = parseFloat(splits[2]);
     toReturn.startZ = parseFloat(splits[3]);
     toReturn.startY = parseFloat(splits[4]);
@@ -185,13 +178,8 @@ class NodeApp {
     toReturn.startMSec = Math.floor(parseFloat(splits[1]));
     return toReturn;
   }
-  getStart(agent) {
-    return [agent.startX, agent.startZ, agent.startY];
-  }
+  getStart(agent) {return [agent.startX, agent.startZ, agent.startY];}
   getEnd(agent) { return [agent.destX, agent.destZ, agent.destY]; }
-
-  setId(agent, i) { agent.id = i; }
-
 }
 
 module.exports = NodeApp;
