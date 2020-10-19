@@ -1,1 +1,1 @@
-module.exports = require("./recastdetourjs.js");
+module.exports = require("./crowded.js");
