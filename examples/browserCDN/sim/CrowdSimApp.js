@@ -1,18 +1,10 @@
-// import CrowdAgentParams from "../../src/detour/crowd/CrowdAgentParams.js"
-// import RecastTestMeshBuilder from "../../src/detour/RecastTestMeshBuilder.js"
-// import NavMesh from "../../src/detour/NavMesh.js"
-// import NavMeshQuery from "../../src/detour/NavMeshQuery.js"
-// import Crowd from "../../src/detour/crowd/Crowd.js"
-// import ObstacleAvoidanceParams from "../../src/detour/crowd/ObstacleAvoidanceParams.js"
 
-//import {CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams} from "../../src/Main.js"
-
-let CrowdAgentParams = recastdetourjs.CrowdAgentParams;
-let RecastTestMeshBuilder = recastdetourjs.RecastTestMeshBuilder;
-let NavMesh = recastdetourjs.NavMesh;
-let NavMeshQuery = recastdetourjs.NavMeshQuery;
-let Crowd = recastdetourjs.Crowd;
-let ObstacleAvoidanceParams = recastdetourjs.ObstacleAvoidanceParams;
+let CrowdAgentParams = crowded.CrowdAgentParams;
+let RecastTestMeshBuilder = crowded.RecastTestMeshBuilder;
+let NavMesh = crowded.NavMesh;
+let NavMeshQuery = crowded.NavMeshQuery;
+let Crowd = crowded.Crowd;
+let ObstacleAvoidanceParams = crowded.ObstacleAvoidanceParams;
 
 
 class CrowdSimApp {
