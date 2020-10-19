@@ -1,3 +1,9 @@
+#### 0.1.8 (2020-10-19)
+
+##### Chores
+
+*  Rename umd package ([5053b6bf](https://github.com/ricksteam/recastdetourjs/commit/5053b6bf74487db1230e163d6926a55558d54e64))
+
 #### 0.1.7 (2020-10-19)
 
 ##### New Features
