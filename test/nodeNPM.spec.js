@@ -1,6 +1,7 @@
 import chai from "chai";
 const assert = chai.assert;
-import NodeApp from "../examples/nodeNPM/NodeApp.js"
+// import NodeApp from "../examples/nodeNPM/NodeApp.js"
+import crowded from "../examples/nodeNPM/crowded.js"
 import fs from "fs";
 import path from "path";
 
@@ -19,8 +20,9 @@ describe("Crowd Simulation", function () {
       let agentStartsFilename = run.csv;
       let _ticks = run.ticks;
 
-      let app = new NodeApp(objFilename, agentStartsFilename, _ticks);
-      await app.go();
+      // let app = new NodeApp(objFilename, agentStartsFilename, _ticks);
+      // await app.go();
+      crowded(objFilename, agentStartsFilename, _ticks);
 
       let baseFilename = `${objFilename}-${agentStartsFilename}-${_ticks}`;
 

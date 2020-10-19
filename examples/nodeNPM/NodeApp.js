@@ -1,7 +1,3 @@
-const fs = require("fs");
-const path = require("path");
-const util = require("util");
-const stream = require("stream");
 const { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } = require("crowded")
 
 class NodeApp {
@@ -17,22 +13,22 @@ class NodeApp {
 
   outStream; //Where we write the results
 
-  constructor(objString, agentStartsString, ticks) {
+  constructor(objString, agentsString, ticks) {
     this.agents = [];
-    this.objFilename = objString;
-    this.agentStartsFilename = agentStartsString;
+    this.objString = objString;
+    this.agentsString = agentsString;
     this.ticks = ticks;
+    this.result = "";
   }
-  async go() {
-    let obj = fs.readFileSync(path.join(__dirname, "../objs/" + this.objFilename), "utf-8");
+  go() {
+    let obj = this.objString;
     //Boot simulation tells Recast to load the scene
 
     this.bootMesh(obj);
 
     //Path is the path to the file where we will store our results
-    let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
-
-    let stream = result.split('\n');
+    
+    let stream = this.agentsString.split('\n');
     stream.forEach((l,index) => l.trim().length > 0 ? this.agents.push(this.newAgent(l,index)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time
@@ -81,15 +77,9 @@ class NodeApp {
       this.writeAgentPosition(currentMillisecond, this.objFilename, this.agentStartsFilename, this.ticks);
       currentMillisecond += millisecondsBetweenFrames;
     }
-    await this.finish();
+    return this.result;
   }
-  async finish() {
-    //= require( https://nodesource.com/blog/understanding-streams-in-nodejs/
-    const finished = util.promisify(stream.finished); 
-    this.outStream.end();
-    await finished(this.outStream);
-    console.log("Ended outStream")
-  }
+  
   truncate(num) {
     if (num > 0)
       return Math.floor(num)
@@ -146,9 +136,7 @@ class NodeApp {
   }
 
   writeAgentPosition(currentMillisecond, objFilename, agentStartsFilename, ticks) {
-    if (!this.outStream) {
-      this.outStream = fs.createWriteStream(`${objFilename}-${agentStartsFilename}-${ticks}-out.csv`, { emitClose: true })
-    }
+   
     for (let j = 0; j < this.agents.length; j++) {
       let agent = this.agents[j];
       if (agent.idx != 0 && !agent.idx) continue;
@@ -158,7 +146,7 @@ class NodeApp {
       let z = this.crowd.getAgent(idx).npos[2];
 
       if (this.agents[j].inSimulation)
-        this.outStream.write("" + j + "," + currentMillisecond + "," + x + "," + y + "," + z + "\n");
+        this.result += ("" + j + "," + currentMillisecond + "," + x + "," + y + "," + z + "\n");
     }
   }
   newAgent(l,index) {
