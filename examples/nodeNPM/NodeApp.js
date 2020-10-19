@@ -1,10 +1,9 @@
-const CrowdSimApp = require( "./sim/CrowdSimApp.js")
-const Agent = require( "./sim/Agent.js")
-const Vector3 = require( "./behavior/Vector3.js")
-const fs = require( "fs");
-const path = require( "path");
-const util = require( "util");
-const stream = require( "stream");
+const CrowdSimApp = require("./sim/CrowdSimApp.js")
+const Agent = require("./sim/Agent.js")
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
+const stream = require("stream");
 
 
 
@@ -15,18 +14,17 @@ class NodeApp extends CrowdSimApp {
     this.objFilename = objString;
     this.agentStartsFilename = agentStartsString;
     this.ticks = ticks;
-    
+
     //this.go();
 
   }
-  async go(){
+  async go() {
     let obj = fs.readFileSync(path.join(__dirname, "../objs/" + this.objFilename), "utf-8");
     //Boot simulation tells Recast to load the scene
 
     this.bootMesh(obj);
 
     //Path is the path to the file where we will store our results
-    //Currently, this is out.csv.
     let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
@@ -67,16 +65,15 @@ class NodeApp extends CrowdSimApp {
         if (agent.hasEntered) {
 
           agent.setActive(true);
-          let newDestination = agent.behavior.update(CrowdSimApp.agents, this.crowd, currentMillisecond);
           agent.setActive(false);
           let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
           let agentDes = agent.getEnd();
 
-          if (newDestination != null) {
-            let checkTempName = newDestination.asArray();
-            let nearest = query.findNearestPoly(newDestination.asArray(), ext, filter);
-            this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
-          } else if (agent.inSimulation == false) {
+          let _x = agentCurPos.x - agent.destX;
+          let _z = agentCurPos.z - agent.destZ;
+
+          let distanceToDestination = Math.sqrt(_x * _x + _z * _z);
+          if(distanceToDestination < 2){
             this.crowd.removeAgent(agent.idx);
           }
           if (this.comparePos(agentCurPos, agentDes)) {
@@ -84,16 +81,6 @@ class NodeApp extends CrowdSimApp {
           }
 
         }
-        // if (j == 0) {
-        //   if (CrowdSimApp.agents[j].idx != 0 && !CrowdSimApp.agents[j].idx) continue
-        //   if (!CrowdSimApp.agents[j].inSimulation) continue;
-        //   let idx = CrowdSimApp.agents[j].idx;
-        //   let x = this.crowd.getAgent(idx).npos[0];
-        //   if (Number.isNaN(x)) continue;
-        //   let y = this.crowd.getAgent(idx).npos[1];
-        //   let z = this.crowd.getAgent(idx).npos[2];
-        //   console.log(`${i} ${this.crowd.m_agents[0].boundary.m_center[0]} ${this.crowd.m_agents[0].boundary.m_center[2]} ${x} ${z}`);
-        // }
       }
       this.crowd.update(1 / 25.0, null, i);
 
@@ -136,4 +123,4 @@ class NodeApp extends CrowdSimApp {
   }
 }
 
-module.exports =  NodeApp;
+module.exports = NodeApp;

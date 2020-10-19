@@ -40,24 +40,7 @@ class CrowdSimApp {
         params.adaptiveRings = 2;
         params.adaptiveDepth = 1;
         this.crowd.setObstacleAvoidanceParams(0, params);
-        params = new ObstacleAvoidanceParams();
-        params.velBias = 0.5;
-        params.adaptiveDivs = 5;
-        params.adaptiveRings = 2;
-        params.adaptiveDepth = 2;
-        this.crowd.setObstacleAvoidanceParams(1, params);
-        params = new ObstacleAvoidanceParams();
-        params.velBias = 0.5;
-        params.adaptiveDivs = 7;
-        params.adaptiveRings = 2;
-        params.adaptiveDepth = 3;
-        this.crowd.setObstacleAvoidanceParams(2, params);
-        params = new ObstacleAvoidanceParams();
-        params.velBias = 0.5;
-        params.adaptiveDivs = 7;
-        params.adaptiveRings = 3;
-        params.adaptiveDepth = 3;
-        this.crowd.setObstacleAvoidanceParams(3, params);
+        
 
         this.ap = this.getAgentParams(this.updateFlags);
         this.ext = this.crowd.getQueryExtents();
