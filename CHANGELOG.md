@@ -1,3 +1,19 @@
+#### 0.1.9 (2020-10-19)
+
+##### Chores
+
+*  Slim down nodeNPM example ([67fb64ad](https://github.com/crowdedjs/crowded/commit/67fb64ad68bb1ce65edde921b8c1d029cdcd8ac0))
+*  Remove dist from repo ([348e3cc5](https://github.com/crowdedjs/crowded/commit/348e3cc5ee81caa4c189d06844105ec159459213))
+
+##### Bug Fixes
+
+*  Convert npm example to CommonJS ([94977978](https://github.com/crowdedjs/crowded/commit/949779786ebd3041d9325a1bb9f161c5bde5c5e7))
+
+##### Other Changes
+
+*  Fix index.js reference ([e49b3d4f](https://github.com/crowdedjs/crowded/commit/e49b3d4f7ce65b1e77371a747d6b1674c235a1a0))
+*  Add methods of accessing the project. ([eefec541](https://github.com/crowdedjs/crowded/commit/eefec5413bc7e2a03ff3ad9052a27e7a8fc5d324))
+
 #### 0.1.8 (2020-10-19)
 
 ##### Chores
