@@ -1,11 +1,5 @@
-const { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } = require( "@ricksteam/recastdetourjs")
+const { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } = require( "crowded")
 const fs = require( "fs");
-const { fileURLToPath } = require( 'url');
-const { dirname } = require( 'path');
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
 
 class CrowdSimApp {
 

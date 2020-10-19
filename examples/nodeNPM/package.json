@@ -12,6 +12,6 @@
   "author": "B. Ricks",
   "license": "ISC",
   "dependencies": {
-    "crowded": "^0.1.8"
+    "crowded": "^0.1.9"
   }
 }
