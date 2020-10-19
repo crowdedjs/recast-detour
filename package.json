@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha",
     "build": "npx babel --config-file ./.babelrc.mjs src -d dist",
-    "rollup": "npx rollup ./src/Main.js --file bundle.js --format umd --name recastdetourjs",
+    "rollup": "npx rollup ./src/Main.js --file recastdetourjs.js --format umd --name recastdetourjs",
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
     "_prerelease:patch": "npm run build && npm run rollup"
   },
