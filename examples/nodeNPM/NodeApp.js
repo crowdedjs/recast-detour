@@ -9,13 +9,13 @@ const { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, O
 
 
 class NodeApp {
-  static updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
+  updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
     | CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
-  static query;
+  query;
   crowd;
-  static agents = [];
-  static ext;
-  static filter;
+  agents = [];
+  ext;
+  filter;
   ap;
   /**
   * Fields required to run the open source backend. There is no need to touch these.
@@ -25,7 +25,7 @@ class NodeApp {
 
   outStream;
   constructor(objString, agentStartsString, ticks) {
-    NodeApp.agents = [];
+    this.agents = [];
     this.objFilename = objString;
     this.agentStartsFilename = agentStartsString;
     this.ticks = ticks;
@@ -43,7 +43,7 @@ class NodeApp {
 
     let stream = result.split('\n');
     Agent.index = 0;
-    stream.forEach(l => l.trim().length > 0 ? NodeApp.agents.push(new Agent(l)) : 0 == 0);
+    stream.forEach(l => l.trim().length > 0 ? this.agents.push(new Agent(l)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time
     let millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
@@ -51,14 +51,14 @@ class NodeApp {
     for (let i = 0; i < secondsOfSimulation; i++) {
       if (i < 1) {
         // initialize all agent's id
-        for (let id = 0; id < NodeApp.agents.length; id++) {
-          let agent = NodeApp.agents[id];
+        for (let id = 0; id < this.agents.length; id++) {
+          let agent = this.agents[id];
           agent.setId(id);
         }
       }
 
-      for (let j = 0; j < NodeApp.agents.length; j++) {
-        let agent = NodeApp.agents[j]; //Grab each agent in the list
+      for (let j = 0; j < this.agents.length; j++) {
+        let agent = this.agents[j]; //Grab each agent in the list
 
         //Ignore agents that have come into the simulation and exited
         if (agent.hasEntered && !agent.inSimulation) continue;
@@ -66,7 +66,7 @@ class NodeApp {
         //See if we need to add the agent to the simulation
         if (!agent.hasEntered && agent.startMSec <= currentMillisecond) {
           let start = agent.getStart();//Get the agent's starting point as a  array
-          let idx = this.crowd.addAgent(start, this.getAgentParams(NodeApp.updateFlags)); //Assign that poPoly to the agent
+          let idx = this.crowd.addAgent(start, this.getAgentParams(this.updateFlags)); //Assign that poPoly to the agent
           agent.idx = idx;
 
           //Now find the nearest valid location to the agent's desired destination
@@ -171,15 +171,15 @@ class NodeApp {
     if (!this.outStream) {
       this.outStream = fs.createWriteStream(`${objFilename}-${agentStartsFilename}-${ticks}-out.csv`, { emitClose: true })
     }
-    for (let j = 0; j < NodeApp.agents.length; j++) {
-      let agent = NodeApp.agents[j];
+    for (let j = 0; j < this.agents.length; j++) {
+      let agent = this.agents[j];
       if (agent.idx != 0 && !agent.idx) continue;
       let idx = agent.idx;
       let x = this.crowd.getAgent(idx).npos[0];
       let y = this.crowd.getAgent(idx).npos[1];
       let z = this.crowd.getAgent(idx).npos[2];
 
-      if (NodeApp.agents[j].inSimulation)
+      if (this.agents[j].inSimulation)
         this.outStream.write("" + j + "," + currentMillisecond + "," + x + "," + y + "," + z + "\n");
     }
   }
