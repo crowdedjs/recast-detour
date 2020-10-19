@@ -67,8 +67,6 @@ class NodeApp {
           agent.inSimulation = true;
         }
         if (agent.hasEntered) {
-
-          this.setActive(agent, false);
           let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
           let agentDes = this.getEnd(agent);
 
@@ -82,7 +80,6 @@ class NodeApp {
           if (this.comparePos(agentCurPos, agentDes)) {
             agent.inSimulation = false;
           }
-
         }
       }
       this.crowd.update(1 / 25.0, null, i);
@@ -95,8 +92,7 @@ class NodeApp {
   }
   async finish() {
     //= require( https://nodesource.com/blog/understanding-streams-in-nodejs/
-    const finished = util.promisify(stream.finished); // (A)
-
+    const finished = util.promisify(stream.finished); 
     this.outStream.end();
     await finished(this.outStream);
     console.log("Ended outStream")
@@ -196,7 +192,6 @@ class NodeApp {
 
   setId(agent, i) { agent.id = i; }
 
-  setActive(agent, active) { agent.active = active; }
 }
 
 module.exports = NodeApp;
