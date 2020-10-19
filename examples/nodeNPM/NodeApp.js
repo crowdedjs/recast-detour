@@ -1,12 +1,8 @@
-const Agent = require("./sim/Agent.js")
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const stream = require("stream");
 const { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } = require("crowded")
-
-
-
 
 class NodeApp {
   updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
@@ -17,20 +13,15 @@ class NodeApp {
   ext;
   filter;
   ap;
-  /**
-  * Fields required to run the open source backend. There is no need to touch these.
-  */
-  //md;
   navmesh;
 
   outStream;
+
   constructor(objString, agentStartsString, ticks) {
     this.agents = [];
     this.objFilename = objString;
     this.agentStartsFilename = agentStartsString;
     this.ticks = ticks;
-
-
   }
   async go() {
     let obj = fs.readFileSync(path.join(__dirname, "../objs/" + this.objFilename), "utf-8");
@@ -42,8 +33,7 @@ class NodeApp {
     let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
-    Agent.index = 0;
-    stream.forEach(l => l.trim().length > 0 ? this.agents.push(new Agent(l)) : 0 == 0);
+    stream.forEach(l => l.trim().length > 0 ? this.agents.push(this.newAgent(l)) : 0 == 0);
 
     let currentMillisecond = 0; //The current time
     let millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
@@ -53,7 +43,7 @@ class NodeApp {
         // initialize all agent's id
         for (let id = 0; id < this.agents.length; id++) {
           let agent = this.agents[id];
-          agent.setId(id);
+          this.setId(agent, id);
         }
       }
 
@@ -65,23 +55,22 @@ class NodeApp {
 
         //See if we need to add the agent to the simulation
         if (!agent.hasEntered && agent.startMSec <= currentMillisecond) {
-          let start = agent.getStart();//Get the agent's starting point as a  array
+          let start = this.getStart(agent);//Get the agent's starting point as a  array
           let idx = this.crowd.addAgent(start, this.getAgentParams(this.updateFlags)); //Assign that poPoly to the agent
           agent.idx = idx;
 
           //Now find the nearest valid location to the agent's desired destination
           //and assign that nearest point.
-          let nearest = this.query.findNearestPoly(agent.getEnd(), this.ext, this.filter);
+          let nearest = this.query.findNearestPoly(this.getEnd(agent), this.ext, this.filter);
           this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
           agent.hasEntered = true;
           agent.inSimulation = true;
         }
         if (agent.hasEntered) {
 
-          agent.setActive(true);
-          agent.setActive(false);
+          this.setActive(agent, false);
           let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
-          let agentDes = agent.getEnd();
+          let agentDes = this.getEnd(agent);
 
           let _x = agentCurPos.x - agent.destX;
           let _z = agentCurPos.z - agent.destZ;
@@ -183,6 +172,31 @@ class NodeApp {
         this.outStream.write("" + j + "," + currentMillisecond + "," + x + "," + y + "," + z + "\n");
     }
   }
+  newAgent(l) {
+    let splits = l.split(",");
+    if (splits.length == 0 || splits.length < 8)
+      console.log("Error")
+
+    let toReturn = {};
+    toReturn.startX = parseFloat(splits[2]);
+    toReturn.startZ = parseFloat(splits[3]);
+    toReturn.startY = parseFloat(splits[4]);
+
+    toReturn.destX = parseFloat(splits[5]);
+    toReturn.destZ = parseFloat(splits[6]);
+    toReturn.destY = parseFloat(splits[7]);
+
+    toReturn.startMSec = Math.floor(parseFloat(splits[1]));
+    return toReturn;
+  }
+  getStart(agent) {
+    return [agent.startX, agent.startZ, agent.startY];
+  }
+  getEnd(agent) { return [agent.destX, agent.destZ, agent.destY]; }
+
+  setId(agent, i) { agent.id = i; }
+
+  setActive(agent, active) { agent.active = active; }
 }
 
 module.exports = NodeApp;
