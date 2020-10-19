@@ -1,3 +1,9 @@
+#### 0.1.7 (2020-10-19)
+
+##### New Features
+
+*  Add CDN-based example ([47d07bd6](https://github.com/ricksteam/recastdetourjs/commit/47d07bd69b748671bbe63d433dc740df2a9c1bba))
+
 #### 0.1.6 (2020-10-17)
 
 ##### Bug Fixes
