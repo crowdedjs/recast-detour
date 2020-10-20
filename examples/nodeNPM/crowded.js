@@ -1,8 +1,6 @@
 const NodeApp = require("./NodeApp")
 const fs = require("fs");
 const path = require("path");
-const util = require("util");
-const stream = require("stream");
 
 
 function crowded(objFilename, agentStartsFilename, ticks){

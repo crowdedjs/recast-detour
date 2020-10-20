@@ -11,8 +11,6 @@ class NodeApp {
   ap;
   navmesh;
 
-  outStream; //Where we write the results
-
   constructor(objString, agentsString, ticks) {
     this.agents = [];
     this.objString = objString;
@@ -21,10 +19,7 @@ class NodeApp {
     this.result = "";
   }
   go() {
-    let obj = this.objString;
-    //Boot simulation tells Recast to load the scene
-
-    this.bootMesh(obj);
+    this.bootMesh(this.objString);
 
     //Path is the path to the file where we will store our results
     
