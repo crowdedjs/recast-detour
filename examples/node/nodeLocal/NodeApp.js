@@ -27,7 +27,7 @@ class NodeApp extends CrowdSimApp {
 
     //Path is the path to the file where we will store our results
     //Currently, this is out.csv.
-    let result = fs.readFileSync(path.join(process.cwd(), "examples/agentStarts/" + this.agentStartsFilename), "utf-8");
+    let result = fs.readFileSync(path.join(process.cwd(), "/examples/agentStarts/" + this.agentStartsFilename), "utf-8");
 
     let stream = result.split('\n');
     Agent.index = 0;

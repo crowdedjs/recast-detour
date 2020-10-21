@@ -1,4 +1,4 @@
-import { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } from "../../../src/Main.js"
+import { CrowdAgentParams, RecastTestMeshBuilder, NavMesh, NavMeshQuery, Crowd, ObstacleAvoidanceParams } from "../../../../src/Main.js"
 import fs from "fs";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';

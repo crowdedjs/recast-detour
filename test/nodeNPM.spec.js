@@ -1,7 +1,7 @@
 import chai from "chai";
 const assert = chai.assert;
 // import NodeApp from "../examples/nodeNPM/NodeApp.js"
-import crowded from "../examples/nodeNPM/crowded.js"
+import crowded from "../examples/node/nodeNPM/crowded.js"
 import fs from "fs";
 import path from "path";
 

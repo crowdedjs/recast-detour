@@ -21,7 +21,7 @@
 <body>
   <canvas id="canv"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/crowded/crowded.min.js"></script>
+  <script src="../../../crowded.js"></script>
 
   <script>
     let e = crowded;
@@ -55,7 +55,7 @@
     import { OrbitControls } from './lib/OrbitControls.js';
     import { OBJLoader } from './lib/OBJLoader.js';
 
-    let objFile = "../objs/hospital.obj";
+    let objFile = "../../objs/hospital.obj";
 
 
     class App extends CrowdSimApp {
@@ -74,7 +74,7 @@
         axios.get(objFile)
           .then(result => {
             this.bootMesh(result.data);
-            return axios.get("../agentStarts/nine.csv");
+            return axios.get("../../agentStarts/nine.csv");
           })
           .then(result => {
             let stream = result.data.split('\n');
