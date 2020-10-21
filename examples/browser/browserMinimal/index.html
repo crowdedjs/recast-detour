@@ -4,10 +4,8 @@
 <head>
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <title>Page Title</title>
+  <title>Minimal Crowded Browser Example</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <script src="./lib/axios.min.js"></script>
-
   <style>
     html,
     body {
@@ -23,30 +21,8 @@
 
   <script src="../../../crowded.js"></script>
 
-  <script>
-    let e = crowded;
-  </script>
-
   <script type="module">
-    //Show FPS
-    (function () {
-      var script = document.createElement('script');
-      script.onload = function () {
-        var stats = new Stats();
-        document.body.appendChild(stats.dom);
-        requestAnimationFrame(
-          function loop() {
-            stats.update();
-            requestAnimationFrame(loop)
-          });
-      };
-      script.src = './lib/stats.min.js';
-      document.head.appendChild(script);
-    })()
-
-
-
-
+   
     //See instructions at https://threejs.org/docs/#manual/en/introduction/Installation.
     import * as THREE from './lib/three.module.js';
     import { OrbitControls } from './lib/OrbitControls.js';
@@ -86,8 +62,6 @@ f 1//1 3//1 4//1 2//1
         let idx = this.crowd.addAgent([10, 0, 10], this.getAgentParams(this.updateFlags))
         let nearest = this.query.findNearestPoly([0,0,0], this.ext, this.filter);
         this.crowd.requestMoveTarget(idx, nearest.getNearestRef(), nearest.getNearestPos());
-            
-
       }
       bootMesh(objFileContents) {
         this.nmd = crowded.RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
@@ -100,7 +74,6 @@ f 1//1 3//1 4//1 2//1
         params.adaptiveRings = 2;
         params.adaptiveDepth = 1;
         this.crowd.setObstacleAvoidanceParams(0, params);
-
 
         this.ap = this.getAgentParams(this.updateFlags);
         this.ext = this.crowd.getQueryExtents();
@@ -123,14 +96,9 @@ f 1//1 3//1 4//1 2//1
       tick() {
         if (!this.crowd) return;
         let i = this.currentTick++;
-        
         this.crowd.update(1 / 25.0, null, i);
-
-
         this.currentMillisecond += this.millisecondsBetweenFrames;
       }
-      
-      
     }
 
     let app = new App();
@@ -149,12 +117,9 @@ f 1//1 3//1 4//1 2//1
     let controls;
     let agentGroup;
 
-
     // OBJ Loading-----------------------------------------
     let object1;
     function loadModel() {
-
-
 
       // object.position.y = - 95;
       scene.add(object1);
@@ -164,24 +129,13 @@ f 1//1 3//1 4//1 2//1
     var manager = new THREE.LoadingManager(loadModel);
 
     manager.onProgress = function (item, loaded, total) {
-
       console.log(item, loaded, total);
-
     };
     new OBJLoader(manager).load(objFile, function (obj) {
-
       object1 = obj;
-
     });
 
-    // loader1.load('../nav_test_big.obj', function (obj) {
-
-    //   object1 = obj;
-
-    // });
-
     function main() {
-
       geometry = new THREE.CylinderGeometry(.2, .2, 1, 8);
       geometryShoulder = new THREE.SphereGeometry(.2, 8, 8);
       geometryHead = new THREE.SphereGeometry(.2, 8, 8);
@@ -228,22 +182,9 @@ f 1//1 3//1 4//1 2//1
         metalness: 0,
         color: 0x0000ff,
       })
-      let agent = new THREE.Mesh(geometry, material);
-      let agent2 = new THREE.Mesh(geometry, material2);
-      let agent3 = new THREE.Mesh(geometry, material3);
-      let agent4 = new THREE.Mesh(geometry, material3);
-      agent.position.set(0, 0, 0);
-      agent2.position.set(1, 0, 0);
-      agent3.position.set(0, 1, 0);
-      agent4.position.set(0, 0, 1);
-      scene.add(agent);
-      scene.add(agent2);
-      scene.add(agent3);
-      scene.add(agent4);
       scene.add(camera);
 
       agentGroup = new THREE.Group();
-
 
       controls = new OrbitControls(
         camera, renderer.domElement
@@ -252,12 +193,10 @@ f 1//1 3//1 4//1 2//1
 
       resize();
       timerID = setTimeout(tick, 33);
-
     }
 
     function tick() {
       update();
-
       draw();
     }
 
@@ -265,9 +204,6 @@ f 1//1 3//1 4//1 2//1
       scene.remove(agentGroup);
       agentGroup = new THREE.Group();
       scene.add(agentGroup);
-
-     
-
 
         let geometry = new THREE.CylinderGeometry(.2, .2, 1, 8);
         let material = new THREE.MeshStandardMaterial({
@@ -280,8 +216,6 @@ f 1//1 3//1 4//1 2//1
         let x = app.crowd.getAgent(idx).npos[0];
         let y = app.crowd.getAgent(idx).npos[1];
         let z = app.crowd.getAgent(idx).npos[2];
-        // if (j == 0)
-        //   console.log(`${x} ${y} ${z}`);
 
         agentMesh.position.set(x, y, z);
         agentGroup.add(agentMesh);
@@ -295,9 +229,7 @@ f 1//1 3//1 4//1 2//1
     let oldHeight;
     let updated = false;
 
-
     function update() {
-
       app.tick();
     }
 
@@ -319,15 +251,7 @@ f 1//1 3//1 4//1 2//1
 
     //From https://stackoverflow.com/a/29522050/10047920
     window.addEventListener("resize", resize);
-
-
-
     main();
   </script>
-
-
-
-
 </body>
-
 </html>
