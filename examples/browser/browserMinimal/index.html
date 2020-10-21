@@ -63,7 +63,6 @@
         | crowded.CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | crowded.CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
       query;
       crowd;
-      agents = [];
       ext;
       filter;
       ap;
@@ -83,13 +82,11 @@ f 1//1 3//1 4//1 2//1
 `;
 
         this.bootMesh(obj);
-        let csv = "0,  0,       10, 0,  10,     0,    0,    0,  none";
-
-        let stream = csv.split('\n');
-        stream.forEach(l => l.trim().length > 0 ? this.agents.push(this.newAgent(l)) : 0 == 0);
         let secondsOfSimulation = 4500; //How long should the simulation run? Change this to whatever you want.
-
-
+        let idx = this.crowd.addAgent([10, 0, 10], this.getAgentParams(this.updateFlags))
+        let nearest = this.query.findNearestPoly([0,0,0], this.ext, this.filter);
+        this.crowd.requestMoveTarget(idx, nearest.getNearestRef(), nearest.getNearestPos());
+            
 
       }
       bootMesh(objFileContents) {
@@ -122,106 +119,18 @@ f 1//1 3//1 4//1 2//1
         ap.separationWeight = 1; //Originally 2f
         return ap;
       }
-      newAgent(l, index) {
-        let splits = l.split(",");
-        if (splits.length == 0 || splits.length < 8)
-          console.log("Error")
-
-        let toReturn = { id: index };
-        toReturn.startX = parseFloat(splits[2]);
-        toReturn.startZ = parseFloat(splits[3]);
-        toReturn.startY = parseFloat(splits[4]);
-
-        toReturn.destX = parseFloat(splits[5]);
-        toReturn.destZ = parseFloat(splits[6]);
-        toReturn.destY = parseFloat(splits[7]);
-
-        toReturn.startMSec = Math.floor(parseFloat(splits[1]));
-        return toReturn;
-      }
-      getStart(agent) { return [agent.startX, agent.startZ, agent.startY]; }
-      getEnd(agent) { return [agent.destX, agent.destZ, agent.destY]; }
+      
       tick() {
         if (!this.crowd) return;
         let i = this.currentTick++;
-        // console.log(i);
         
-
-        // for(let  a : agents) System.out.println("who is checked? "+a.getChecked() + " who is waiting? " + a.isWaiting()  + a.getId() + " " + i);
-        for (let j = 0; j < this.agents.length; j++) {
-
-
-          let agent = this.agents[j]; //Grab each agent in the list
-
-          //Ignore agents that have come into the simulation and exited
-          if (agent.hasEntered && !agent.inSimulation) continue;
-
-          //See if we need to add the agent to the simulation
-          if (!agent.hasEntered && agent.startMSec <= this.currentMillisecond) {
-            let start = this.getStart(agent);//Get the agent's starting point as a  array
-            let idx = this.crowd.addAgent(start, this.getAgentParams(this.updateFlags)); //Assign that poPoly to the agent
-            agent.idx = idx;
-
-            //Now find the nearest valid location to the agent's desired destination
-            //and assign that nearest point.
-            let nearest = this.query.findNearestPoly(this.getEnd(agent), this.ext, this.filter);
-            this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
-            agent.hasEntered = true;
-            agent.inSimulation = true;
-          }
-
-          if (agent.hasEntered) {
-            // let newDestination = new Vector3(0, 0.318020731, 12);
-
-
-
-            let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
-            let agentDes = this.getEnd(agent);
-
-            let _x = agentCurPos.x - agent.destX;
-            let _z = agentCurPos.z - agent.destZ;
-
-            let distanceToDestination = Math.sqrt(_x * _x + _z * _z);
-            if (distanceToDestination < 2) {
-              this.crowd.removeAgent(agent.idx);
-            }
-            if (this.comparePos(agentCurPos, agentDes)) {
-              agent.inSimulation = false;
-            }
-
-          }
-
-
-        }
         this.crowd.update(1 / 25.0, null, i);
 
 
         this.currentMillisecond += this.millisecondsBetweenFrames;
       }
-      truncate(num) {
-        if (num > 0)
-          return Math.floor(num)
-        else
-          return Math.ceil(num);
-      }
-      comparePos(pos1, pos2) {
-
-        let res = false;
-
-        let endX1 = pos1[0];
-        let endY1 = pos1[2];
-
-        let endX2 = pos2[0];
-        let endY2 = pos2[2];
-
-        let absEndX = Math.abs(this.truncate(endX1 - endX2));
-        let absEndY = Math.abs(this.truncate(endY1 - endY2));
-
-        if (absEndX <= 2 && absEndY <= 2) {
-          res = true;
-        }
-        return res;
-      }
+      
+      
     }
 
     let app = new App();
@@ -357,14 +266,7 @@ f 1//1 3//1 4//1 2//1
       agentGroup = new THREE.Group();
       scene.add(agentGroup);
 
-      for (let j = 0; j < app.agents.length; j++) {
-
-        let agent = app.agents[j]; //Grab each agent in the list
-
-        //Ignore agents that have come into the simulation and exited
-        if (agent.hasEntered && !agent.inSimulation) continue;
-        if (!agent.hasEntered) continue;
-
+     
 
 
         let geometry = new THREE.CylinderGeometry(.2, .2, 1, 8);
@@ -374,7 +276,7 @@ f 1//1 3//1 4//1 2//1
           color: 0x00ff00,
         })
         let agentMesh = new THREE.Mesh(geometry, material);
-        let idx = app.agents[j].idx;
+        let idx = 0;
         let x = app.crowd.getAgent(idx).npos[0];
         let y = app.crowd.getAgent(idx).npos[1];
         let z = app.crowd.getAgent(idx).npos[2];
@@ -383,7 +285,7 @@ f 1//1 3//1 4//1 2//1
 
         agentMesh.position.set(x, y, z);
         agentGroup.add(agentMesh);
-      }
+      
       if (renderer)
         renderer.render(scene, camera)
       timerID = setTimeout(tick, 33);
