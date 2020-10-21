@@ -46,9 +46,6 @@
 
 
 
-    import CrowdSimApp from "./sim/CrowdSimApp.js"
-    import Vector3 from "./behavior/Vector3.js"
-    import Agent from "./sim/Agent.js"
 
     //See instructions at https://threejs.org/docs/#manual/en/introduction/Installation.
     import * as THREE from './lib/three.module.js';
@@ -58,69 +55,116 @@
     let objFile = "../../objs/flat.obj";
 
 
-    class App extends CrowdSimApp {
+    class App {
       currentMillisecond = 0;
       millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
       currentTick = 0;
+      updateFlags = crowded.CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | crowded.CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
+        | crowded.CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | crowded.CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
+      query;
+      crowd;
+      agents = [];
+      ext;
+      filter;
+      ap;
+      navmesh;
 
       constructor() {
-        super();
-        //Boot simulation tells Recast to load the scene
-        //this.bootMesh();
+        this.agents = [];
+        this.result = "";
+        let obj =
+          `
+v 100 0 -100
+v 100 0 100
+v -100 0 -100
+v -100 0 100
+vn 0 1 0
+f 1//1 3//1 4//1 2//1
+`;
 
-        //Path is the path to the file where we will store our results
-        //Currently, this is out.csv.
-        //let path = this.bootFiles("in.csv");
-        axios.get(objFile)
-          .then(result => {
-            this.bootMesh(result.data);
-            return axios.get("../../agentStarts/simple.csv");
-          })
-          .then(result => {
-            let stream = result.data.split('\n');
-            stream.forEach(l => l.trim().length > 0 ? CrowdSimApp.agents.push(new Agent(l)) : 0 == 0);
-            let secondsOfSimulation = 4500; //How long should the simulation run? Change this to whatever you want.
-            // for (let i = 0; i < secondsOfSimulation; i++) {
+        this.bootMesh(obj);
+        let csv = "0,  0,       10, 0,  10,     0,    0,    0,  none";
 
-            //   this.tick(i);
-            // }
+        let stream = csv.split('\n');
+        stream.forEach(l => l.trim().length > 0 ? this.agents.push(this.newAgent(l)) : 0 == 0);
+        let secondsOfSimulation = 4500; //How long should the simulation run? Change this to whatever you want.
 
-          })
-          .catch(err => {
-            console.error(err);
-          })
+
+
       }
+      bootMesh(objFileContents) {
+        this.nmd = crowded.RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
+        this.navmesh = new crowded.NavMesh(this.nmd, 6, 0);
+        this.query = new crowded.NavMeshQuery(this.navmesh);
+        this.crowd = new crowded.Crowd(500, 0.6, this.navmesh);
+        let params = new crowded.ObstacleAvoidanceParams();
+        params.velBias = 0.5;
+        params.adaptiveDivs = 5;
+        params.adaptiveRings = 2;
+        params.adaptiveDepth = 1;
+        this.crowd.setObstacleAvoidanceParams(0, params);
+
+
+        this.ap = this.getAgentParams(this.updateFlags);
+        this.ext = this.crowd.getQueryExtents();
+        this.filter = this.crowd.getFilter(0);
+      }
+      getAgentParams(updateFlags) {
+        let ap = new crowded.CrowdAgentParams();
+        ap.radius = 0.6;
+        ap.height = 2;
+        ap.maxAcceleration = 8.0;
+        ap.maxSpeed = 2.5; //Originally 3.5f
+        ap.collisionQueryRange = ap.radius * 12;
+        ap.pathOptimizationRange = ap.radius * 30;
+        ap.updateFlags = updateFlags;
+        ap.obstacleAvoidanceType = 0;
+        ap.separationWeight = 1; //Originally 2f
+        return ap;
+      }
+      newAgent(l, index) {
+        let splits = l.split(",");
+        if (splits.length == 0 || splits.length < 8)
+          console.log("Error")
+
+        let toReturn = { id: index };
+        toReturn.startX = parseFloat(splits[2]);
+        toReturn.startZ = parseFloat(splits[3]);
+        toReturn.startY = parseFloat(splits[4]);
+
+        toReturn.destX = parseFloat(splits[5]);
+        toReturn.destZ = parseFloat(splits[6]);
+        toReturn.destY = parseFloat(splits[7]);
+
+        toReturn.startMSec = Math.floor(parseFloat(splits[1]));
+        return toReturn;
+      }
+      getStart(agent) { return [agent.startX, agent.startZ, agent.startY]; }
+      getEnd(agent) { return [agent.destX, agent.destZ, agent.destY]; }
       tick() {
         if (!this.crowd) return;
         let i = this.currentTick++;
         // console.log(i);
-        if (i < 1) {
-          // initialize all agent's id
-          for (let id = 0; id < CrowdSimApp.agents.length; id++) {
-            let agent = CrowdSimApp.agents[id];
-            agent.setId(id);
-            // agent.setChecked(false);
-          }
-        }
+        
 
         // for(let  a : agents) System.out.println("who is checked? "+a.getChecked() + " who is waiting? " + a.isWaiting()  + a.getId() + " " + i);
-        for (let j = 0; j < CrowdSimApp.agents.length; j++) {
+        for (let j = 0; j < this.agents.length; j++) {
 
 
-          let agent = CrowdSimApp.agents[j]; //Grab each agent in the list
+          let agent = this.agents[j]; //Grab each agent in the list
 
           //Ignore agents that have come into the simulation and exited
           if (agent.hasEntered && !agent.inSimulation) continue;
 
           //See if we need to add the agent to the simulation
           if (!agent.hasEntered && agent.startMSec <= this.currentMillisecond) {
-            let start = agent.getStart();//Get the agent's starting point as a  array
-            let idx = this.crowd.addAgent(start, this.getAgentParams(CrowdSimApp.updateFlags)); //Assign that poPoly to the agent
+            let start = this.getStart(agent);//Get the agent's starting point as a  array
+            let idx = this.crowd.addAgent(start, this.getAgentParams(this.updateFlags)); //Assign that poPoly to the agent
             agent.idx = idx;
 
             //Now find the nearest valid location to the agent's desired destination
             //and assign that nearest point.
-            let nearest = this.query.findNearestPoly(agent.getEnd(), this.ext, this.filter);
+            let nearest = this.query.findNearestPoly(this.getEnd(agent), this.ext, this.filter);
             this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
             agent.hasEntered = true;
             agent.inSimulation = true;
@@ -130,40 +174,23 @@
             // let newDestination = new Vector3(0, 0.318020731, 12);
 
 
-            agent.setActive(true);
-            let newDestination = agent.behavior.update(CrowdSimApp.agents, this.crowd, this.currentMillisecond);
-            agent.setActive(false);
+
             let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
-            let agentDes = agent.getEnd();
+            let agentDes = this.getEnd(agent);
 
-            // newDestination = new  (f[0], f[1], f[2]);
-            if (newDestination != null) {
-              let checkTempName = newDestination.asArray();
-              let nearest = query.findNearestPoly(newDestination.asArray(), ext, filter);
-              this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
-            } else if (agent.inSimulation == false) {
+            let _x = agentCurPos.x - agent.destX;
+            let _z = agentCurPos.z - agent.destZ;
+
+            let distanceToDestination = Math.sqrt(_x * _x + _z * _z);
+            if (distanceToDestination < 2) {
               this.crowd.removeAgent(agent.idx);
-              console.log("removing " + j);
-            } else {
-
             }
             if (this.comparePos(agentCurPos, agentDes)) {
               agent.inSimulation = false;
-              //                            System.out.println("==========removing " + j);
             }
 
           }
-          if (j == 0) {
-            if (CrowdSimApp.agents[j].idx != 0 && !CrowdSimApp.agents[j].idx) continue
-            if (!CrowdSimApp.agents[j].inSimulation) continue;
-            let idx = CrowdSimApp.agents[j].idx;
-            let x = this.crowd.getAgent(idx).npos[0];
-            if (Number.isNaN(x)) continue;
-            let y = this.crowd.getAgent(idx).npos[1];
-            let z = this.crowd.getAgent(idx).npos[2];
-            // console.log(`${i} ${this.crowd.m_agents[0].boundary.m_center} ${this.crowd.m_agents[0].boundary.m_segs.length} ${x} ${y} ${z}`);
-            console.log(`${i} ${this.crowd.m_agents[0].boundary.m_center[0]} ${this.crowd.m_agents[0].boundary.m_center[2]} ${x} ${z}`);
-          }
+
 
         }
         this.crowd.update(1 / 25.0, null, i);
@@ -330,9 +357,9 @@
       agentGroup = new THREE.Group();
       scene.add(agentGroup);
 
-      for (let j = 0; j < CrowdSimApp.agents.length; j++) {
+      for (let j = 0; j < app.agents.length; j++) {
 
-        let agent = CrowdSimApp.agents[j]; //Grab each agent in the list
+        let agent = app.agents[j]; //Grab each agent in the list
 
         //Ignore agents that have come into the simulation and exited
         if (agent.hasEntered && !agent.inSimulation) continue;
@@ -347,7 +374,7 @@
           color: 0x00ff00,
         })
         let agentMesh = new THREE.Mesh(geometry, material);
-        let idx = CrowdSimApp.agents[j].idx;
+        let idx = app.agents[j].idx;
         let x = app.crowd.getAgent(idx).npos[0];
         let y = app.crowd.getAgent(idx).npos[1];
         let z = app.crowd.getAgent(idx).npos[2];
