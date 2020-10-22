@@ -20,4 +20,8 @@
     "@babel/preset-env": "^7.11.5",
     "rollup": "^2.29.0"
   },
+  "workspaces":  [
+    "packages/*"
+  ]
+
 }

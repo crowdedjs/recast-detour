@@ -10,8 +10,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "B. Ricks",
-  "license": "ISC",
-  "dependencies": {
-    "crowded": "^0.1.9"
-  }
+  "license": "ISC"
+  
 }
