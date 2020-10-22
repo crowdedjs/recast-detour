@@ -1,8 +1,4 @@
 {
-  "name": "crowded",
-  "version": "0.1.9",
-  "description": "This is a JavaScript implementation of the Recast Navigation [library](https://github.com/recastnavigation/recastnavigation), also called Recast Detour. This implementation is not a direct implementation, but a port of the Java [port](https://github.com/ppiastucki/recast4j).",
-  "main": "./index.js",
   "directories": {
     "example": "examples"
   },
@@ -13,16 +9,7 @@
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
     "_prerelease:patch": "npm run build && npm run rollup"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/crowdedjs/crowded.git"
-  },
-  "keywords": [],
-  "author": "Mikko Mononen, Piotr Piastucki, and B. Ricks",
-  "license": "zlib",
-  "bugs": {
-    "url": "https://github.com/crowdedjs/crowded/issues"
-  },
+  
   "homepage": "https://github.com/crowdedjs/crowded#readme",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -33,6 +20,11 @@
     "generate-changelog": "^1.8.0",
     "mocha": "^8.1.3",
     "rollup": "^2.29.0"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
   },
   "dependencies": {}
 }
