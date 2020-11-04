@@ -10389,11 +10389,11 @@
 	 */
 	class BVNode {
 		/** Minimum bounds of the node's AABB. [(x, y, z)] */
-	bmin = new Array(3);
+		bmin = new Array(3);
 		/** Maximum bounds of the node's AABB. [(x, y, z)] */
-	bmax = new Array(3);
+		bmax = new Array(3);
 		/** The node's index. (Negative for escape sequence.) */
-	 i = 0;
+		i = 0;
 	}
 
 	/*

@@ -8,7 +8,7 @@
   "scripts": {
     "test": "mocha",
     "build": "npx babel  ./packages/crowded/src -d ./packages/crowded/dist",
-    "rollup": "npx rollup ./packages/crowded/src/Main.js --file crowded.js --format umd --name crowded",
+    "rollup": "npx rollup ./packages/crowded/dist/Main.js --file crowded.js --format umd --name crowded",
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
     "_prerelease:patch": "npm run build && npm run rollup"
   },

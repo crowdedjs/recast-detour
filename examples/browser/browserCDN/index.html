@@ -21,13 +21,11 @@
 <body>
   <canvas id="canv"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/crowded/crowded.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/crowded/crowded.min.js"></script> -->
 
-  <script>
-    let e = crowded;
-  </script>
-
+  
   <script type="module">
+    import * as crowded from "https://cdn.jsdelivr.net/npm/crowded/crowded.min.js"
     //Show FPS
     (function () {
       var script = document.createElement('script');
