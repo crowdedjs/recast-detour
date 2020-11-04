@@ -1,3 +1,30 @@
+#### 1.0.1 (2020-11-04)
+
+##### New Features
+
+*  Add browser minimal (7b048894)
+*  Add flat obj (7bb26605)
+
+##### Bug Fixes
+
+*  rollup dist not src (9c7c52c5)
+
+##### Refactors
+
+*  Build on npm 7 (e024de6e)
+*  Move for npm 7 (9d71fbc1)
+*  Moving to npm 7 packages (5b81c6d9)
+*  Simplify example (66637e0e)
+*  Simplify browser minimal (0827472b)
+*  Simplify minimal browser (c9dd64fd)
+*  Move examples into subfolders. (23086cc5)
+*  Remove file operations from NodeApp (1cdbab94)
+*  Remove setId (34373de5)
+*  Remove references to active (81db4496)
+*  Remove dependency on Agent.js (5ece7fb8)
+*  Remove static references (08df75d2)
+*  Remove CrowdSimApp from nodeNPM example (dd548a41)
+
 #### 0.1.9 (2020-10-19)
 
 ##### Chores
