@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha",
     "rollup": "npx rollup -c rollup.config.js",
-    "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
+    "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags"
   },
   "repository": {
     "type": "git",
