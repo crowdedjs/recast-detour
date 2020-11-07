@@ -19,7 +19,7 @@ freely, subject to the following restrictions:
 
 import Context from "./Context.js"
 import Heightfield from "./Heightfield.js"
-import Recast from "../recast/Recast.js"
+import Recast from "./Recast.js"
 import RecastRasterization from "./RecastRasterization.js"
 import RecastFilter from "./RecastFilter.js"
 import RecastArea from "./RecastArea.js"

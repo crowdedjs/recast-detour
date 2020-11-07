@@ -8,10 +8,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "npx babel --config-file ./.babelrc.mjs src -d dist",
-    "rollup": "npx rollup ./package/dist/Main.js --file crowded.js --format umd --name crowded",
+    "rollup": "npx rollup -c rollup.config.js",
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags",
-    "_prerelease:patch": "npm run build && npm run rollup"
   },
   "repository": {
     "type": "git",
@@ -29,6 +27,8 @@
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "chai": "^4.2.0",
     "generate-changelog": "^1.8.0",
     "mocha": "^8.1.3",
