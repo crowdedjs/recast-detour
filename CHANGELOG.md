@@ -1,3 +1,15 @@
+#### 0.1.10 (2020-11-07)
+
+##### New Features
+
+*  Add babel to rollup ([37c782b1](https://github.com/crowdedjs/crowded/commit/37c782b17366e60285ffcd7b089acc6e1570099d))
+
+##### Bug Fixes
+
+*  Remove malformated json ([3f3a61d5](https://github.com/crowdedjs/crowded/commit/3f3a61d58f0cec7f3b2757ee2b4cbbd823f97b51))
+*  Rollup the dist folder ([5faea049](https://github.com/crowdedjs/crowded/commit/5faea0493b1e21f8920780760520048fa410b8fd))
+*  Revert version number ([b8faafee](https://github.com/crowdedjs/crowded/commit/b8faafeef145eb0b870eb857d3158f739d6f62c1))
+
 #### 1.0.1 (2020-11-04)
 
 ##### New Features
