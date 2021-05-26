@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Minimal Browser Example</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+  <canvas id="canv2"></canvas>
+  <canvas id="canv"></canvas>
+
+  <script type="module">
+
+    import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
+
+    let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
+    let RecastTestMeshBuilder = globalThis.crowded.RecastTestMeshBuilder;
+    let NavMesh = globalThis.crowded.NavMesh;
+    let NavMeshQuery = globalThis.crowded.NavMeshQuery;
+    let Crowd = globalThis.crowded.Crowd;
+    let ObstacleAvoidanceParams = globalThis.crowded.ObstacleAvoidanceParams;
+
+
+    class CrowdSimApp {
+
+      static updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
+        | CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
+      static query;
+      crowd;
+      static agents = [];
+      static ext;
+      static filter;
+      ap;
+      md;
+      navmesh;
+      outStream;
+
+
+
+      bootMesh(objFileContents) {
+
+
+        this.nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
+        this.navmesh = new NavMesh(this.nmd, 6, 0);
+        this.query = new NavMeshQuery(this.navmesh);
+        this.crowd = new Crowd(500, 0.6, this.navmesh);
+        let params = new ObstacleAvoidanceParams();
+        params.velBias = 0.5;
+        params.adaptiveDivs = 5;
+        params.adaptiveRings = 2;
+        params.adaptiveDepth = 1;
+        this.crowd.setObstacleAvoidanceParams(0, params);
+        params = new ObstacleAvoidanceParams();
+        params.velBias = 0.5;
+        params.adaptiveDivs = 5;
+        params.adaptiveRings = 2;
+        params.adaptiveDepth = 2;
+
+        this.ap = this.getAgentParams(this.updateFlags);
+        this.ext = this.crowd.getQueryExtents();
+        this.filter = this.crowd.getFilter(0);
+      }
+
+      getAgentParams(updateFlags) {
+        let ap = new CrowdAgentParams();
+        ap.radius = 0.6;
+        ap.height = 2;
+        ap.maxAcceleration = 8.0;
+        ap.maxSpeed = 2.5; //Originally 3.5f
+        ap.collisionQueryRange = ap.radius * 12;
+        ap.pathOptimizationRange = ap.radius * 30;
+        ap.updateFlags = updateFlags;
+        ap.obstacleAvoidanceType = 0;
+        ap.separationWeight = 1; //Originally 2f
+        return ap;
+      }
+    }
+
+    class None {
+
+      crowd;
+      inSimulation = true;
+
+      update(agents, crowd, msec) {
+        if (Math.sqrt(crowd.getAgent(0).npos[0] ^ 2 + crowd.getAgent(0).npos[2] ^ 2) < 2) this.inSimulation = false;
+
+        return null;
+      }
+    }
+
+    class Agent {
+      inSimulation = false;
+      hasEntered = false;
+      behavior = new None();
+
+      getStart() { return [10, 0, 10]; }
+
+      getEnd() { return [0, 0, 0]; }
+
+      isActive() { return active; }
+      setActive(active) { this.active = active; }
+    }
+
+    
+    let objFile = "../../objs/flat.obj";
+
+    class App extends CrowdSimApp {
+      currentMillisecond = 0;
+      millisecondsBetweenFrames = 40; //40ms between frames, or 25fps
+      currentTick = 0;
+
+      constructor() {
+        super();
+
+
+        let objFile =
+          `v 100 0 -100
+v 100 0 100
+v -100 0 -100
+v -100 0 100
+vn 0 1 0
+f 1//1 3//1 4//1 2//1`;
+        this.bootMesh(objFile);
+        let result = `0,  0,       10, 0,  10,     0,    0,    0,  none`;
+        let stream = result.split('\n');
+        stream.forEach(l => l.trim().length > 0 ? CrowdSimApp.agents.push(new Agent(l)) : 0 == 0);
+        let secondsOfSimulation = 4500;
+      }
+      tick() {
+        let j = 0;
+        let agent = CrowdSimApp.agents[j]; //Grab each agent in the list
+
+        if (agent.hasEntered && !agent.inSimulation) return;
+
+        if (!agent.hasEntered) {
+          let start = [10, 0, 10];//Get the agent's starting point as a  array
+          let idx = this.crowd.addAgent(start, this.getAgentParams(CrowdSimApp.updateFlags)); //Assign that poPoly to the agent
+          agent.idx = idx;
+
+          //Now find the nearest valid location to the agent's desired destination
+          //and assign that nearest point.
+          let nearest = this.query.findNearestPoly(agent.getEnd(), this.ext, this.filter);
+          this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
+          agent.hasEntered = true;
+          agent.inSimulation = true;
+        }
+
+        if (agent.hasEntered) {
+          agent.setActive(true);
+          let newDestination = agent.behavior.update(CrowdSimApp.agents, this.crowd, this.currentMillisecond);
+          agent.setActive(false);
+          let agentCurPos = [this.crowd.getAgent(j).npos[0], this.crowd.getAgent(j).npos[1], this.crowd.getAgent(j).npos[2]];
+          let agentDes = agent.getEnd();
+
+          // newDestination = new  (f[0], f[1], f[2]);
+          if (newDestination != null) {
+            let checkTempName = newDestination.asArray();
+            let nearest = query.findNearestPoly(newDestination.asArray(), ext, filter);
+            this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
+          } else if (agent.inSimulation == false) {
+            this.crowd.removeAgent(agent.idx);
+            
+          } else {
+
+          }
+          if (this.comparePos(agentCurPos, agentDes)) {
+            agent.inSimulation = false;
+          }
+
+        }
+        if (j == 0) {
+          if (CrowdSimApp.agents[j].idx != 0 && !CrowdSimApp.agents[j].idx) return
+          if (!CrowdSimApp.agents[j].inSimulation) return;
+          let idx = CrowdSimApp.agents[j].idx;
+          let x = this.crowd.getAgent(idx).npos[0];
+          if (Number.isNaN(x)) return;
+          let y = this.crowd.getAgent(idx).npos[1];
+          let z = this.crowd.getAgent(idx).npos[2];
+          // console.log(`${this.crowd.m_agents[0].boundary.m_center[0]} ${this.crowd.m_agents[0].boundary.m_center[2]} ${x} ${z}`);
+        }
+
+
+        this.crowd.update(1 / 25.0, null, 0);
+
+
+        this.currentMillisecond += this.millisecondsBetweenFrames;
+      }
+      truncate(num) {
+        if (num > 0)
+          return Math.floor(num)
+        else
+          return Math.ceil(num);
+      }
+      comparePos(pos1, pos2) {
+
+        let res = false;
+
+        let endX1 = pos1[0];
+        let endY1 = pos1[2];
+
+        let endX2 = pos2[0];
+        let endY2 = pos2[2];
+
+        let absEndX = Math.abs(this.truncate(endX1 - endX2));
+        let absEndY = Math.abs(this.truncate(endY1 - endY2));
+
+        if (absEndX <= 2 && absEndY <= 2) {
+          res = true;
+        }
+        return res;
+      }
+    }
+
+    let app = new App();
+
+    
+
+    
+
+    function tick() {
+      main2d();
+      app.tick();
+    }
+
+    function main2d(){
+      let ctx = document.querySelector("#canv2").getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, 100, 100);
+      let agent = CrowdSimApp.agents[0];
+      let x = app.crowd.getAgent(0).npos[0];
+      let y = app.crowd.getAgent(0).npos[1];
+      let z = app.crowd.getAgent(0).npos[2];
+
+      ctx.fillStyle = "white";
+      ctx.fillRect(x, z, 10, 10);
+      
+    }
+    //main2d();
+    setInterval(tick, 33);
+  </script>
+</body>
+
+</html>
