@@ -12,17 +12,8 @@
     import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
 
     let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
-    let RecastTestMeshBuilder = globalThis.crowded.RecastTestMeshBuilder;
-    let NavMesh = globalThis.crowded.NavMesh;
-    let NavMeshQuery = globalThis.crowded.NavMeshQuery;
-    let Crowd = globalThis.crowded.Crowd;
-    let ObstacleAvoidanceParams = globalThis.crowded.ObstacleAvoidanceParams;
 
     let inSimulation = false;
-
-    let updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
-      | CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
-
     let query;
     let crowd;
     let agent;
@@ -38,19 +29,13 @@
     ap.maxAcceleration = 8.0;
     ap.maxSpeed = 2.5; //Originally 3.5f
 
-    nmd = RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
-    navmesh = new NavMesh(nmd, 6, 0);
-    query = new NavMeshQuery(navmesh);
-    crowd = new Crowd(500, 0.6, navmesh);
-    let params = new ObstacleAvoidanceParams();
-    params.velBias = 0.5;
-    params.adaptiveDivs = 5;
-    params.adaptiveRings = 2;
-    params.adaptiveDepth = 1;
-    crowd.setObstacleAvoidanceParams(0, params);
+    nmd = globalThis.crowded.RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
+    navmesh = new globalThis.crowded.NavMesh(nmd, 6, 0);
+    query = new globalThis.crowded.NavMeshQuery(navmesh);
+    crowd = new globalThis.crowded.Crowd(500, 0.6, navmesh);
+    crowd.setObstacleAvoidanceParams(0, new globalThis.crowded.ObstacleAvoidanceParams());
     ext = crowd.getQueryExtents();
     filter = crowd.getFilter(0);
-    let stream = `0,  0,       10, 0,  10,     0,    0,    0,  none`;
 
     crowd.addAgent([10, 0, 10], ap); //Assign that poPoly to the agent
 
