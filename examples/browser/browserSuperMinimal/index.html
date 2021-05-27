@@ -18,15 +18,6 @@
     let Crowd = globalThis.crowded.Crowd;
     let ObstacleAvoidanceParams = globalThis.crowded.ObstacleAvoidanceParams;
 
-
-    let objFile =
-      `v 100 0 -100
-v 100 0 100
-v -100 0 -100
-v -100 0 100
-vn 0 1 0
-f 1//1 3//1 4//1 2//1`;
-
     let inSimulation = false;
 
     let updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
@@ -47,7 +38,7 @@ f 1//1 3//1 4//1 2//1`;
     ap.maxAcceleration = 8.0;
     ap.maxSpeed = 2.5; //Originally 3.5f
 
-    nmd = RecastTestMeshBuilder.fromFile(objFile).getMeshData();
+    nmd = RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
     navmesh = new NavMesh(nmd, 6, 0);
     query = new NavMeshQuery(navmesh);
     crowd = new Crowd(500, 0.6, navmesh);
@@ -57,29 +48,17 @@ f 1//1 3//1 4//1 2//1`;
     params.adaptiveRings = 2;
     params.adaptiveDepth = 1;
     crowd.setObstacleAvoidanceParams(0, params);
-    params = new ObstacleAvoidanceParams();
-    params.velBias = 0.5;
-    params.adaptiveDivs = 5;
-    params.adaptiveRings = 2;
-    params.adaptiveDepth = 2;
     ext = crowd.getQueryExtents();
     filter = crowd.getFilter(0);
-    let result = `0,  0,       10, 0,  10,     0,    0,    0,  none`;
-    let stream = result.split('\n');
+    let stream = `0,  0,       10, 0,  10,     0,    0,    0,  none`;
 
     crowd.addAgent([10, 0, 10], ap); //Assign that poPoly to the agent
 
+    let nearest = query.findNearestPoly([0, 0, 0], ext, filter);
+    crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
+    inSimulation = true;
 
-
-
-   
-
-
-
-      let nearest = query.findNearestPoly([0, 0, 0], ext, filter);
-      crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
-      inSimulation = true;
-    
+    let ctx = document.querySelector("#canv2").getContext("2d");
 
     function update() {
       if (!inSimulation) return;
@@ -90,9 +69,7 @@ f 1//1 3//1 4//1 2//1`;
       crowd.update(1 / 25.0, null, 0);
     }
 
-
     function draw() {
-      let ctx = document.querySelector("#canv2").getContext("2d");
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, 100, 100);
       let x = crowd.getAgent(0).npos[0];
@@ -103,7 +80,7 @@ f 1//1 3//1 4//1 2//1`;
       ctx.fillRect(x, z, 10, 10);
     }
 
-    setInterval(()=>{draw();update();}, 33);
+    setInterval(() => { draw(); update(); }, 33);
   </script>
 </body>
 
