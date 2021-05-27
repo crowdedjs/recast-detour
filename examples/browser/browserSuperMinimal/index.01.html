@@ -11,7 +11,7 @@
 
     // import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
     import * as crowded from "../../../crowded.dev.js"
-    
+
     let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
     let inSimulation = false;
 
@@ -53,12 +53,42 @@
       let z = crowd.getAgent(0).npos[2];
 
       ctx.save();
-      ctx.translate(250,250)
-      ctx.scale(10, 10)
+      ctx.translate(250, 250)
+      ctx.scale(2, 2)
       ctx.fillStyle = "white";
       ctx.beginPath();
-      ctx.arc(x, z, 1, 0, Math.PI*2);
+      ctx.arc(x, z, 1, 0, Math.PI * 2);
       ctx.fill();
+      
+      //Now draw the navigation mesh data
+      let verts = nmd.verts;
+      let polys = nmd.polys;
+      for (let i = 0; i < verts.length; i += 3) {
+        let x = verts[i];
+        let y = verts[i + 1];
+        let z = verts[i + 2];
+        ctx.fillStyle = "blue";
+        ctx.beginPath();
+        ctx.arc(x, z, 1, 0, Math.PI * 2);
+        ctx.fill();
+        
+      }
+      for(let i = 0; i < polys.length; i++){
+        let poly = polys[i];
+        for(let j = 0; j < poly.vertCount; j++){
+          ctx.strokeStyle="azure";
+          ctx.beginPath();
+          let index1 = poly.verts[j];
+          let index2 = poly.verts[(j+1)%poly.vertCount]
+          let x1 = verts[index1*3];
+          let x2 = verts[index2*3];
+          let y1 = verts[index1*3+2]
+          let y2 = verts[index2*3+2]
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+          ctx.stroke();
+        }
+      }
       ctx.restore();
     }
 
