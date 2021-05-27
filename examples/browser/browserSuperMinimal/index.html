@@ -12,30 +12,20 @@
     import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
 
     let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
-
     let inSimulation = false;
-    let query;
-    let crowd;
-    let agent;
-    let ext;
-    let filter;
-    let md;
-    let navmesh;
-    let outStream;
-    let nmd;
-
+    
     let ap = new CrowdAgentParams();
     ap.radius = 0.6;
     ap.maxAcceleration = 8.0;
     ap.maxSpeed = 2.5; //Originally 3.5f
 
-    nmd = globalThis.crowded.RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
-    navmesh = new globalThis.crowded.NavMesh(nmd, 6, 0);
-    query = new globalThis.crowded.NavMeshQuery(navmesh);
-    crowd = new globalThis.crowded.Crowd(500, 0.6, navmesh);
+    let nmd = globalThis.crowded.RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
+    let navmesh = new globalThis.crowded.NavMesh(nmd, 6, 0);
+    let query = new globalThis.crowded.NavMeshQuery(navmesh);
+    let crowd = new globalThis.crowded.Crowd(500, 0.6, navmesh);
     crowd.setObstacleAvoidanceParams(0, new globalThis.crowded.ObstacleAvoidanceParams());
-    ext = crowd.getQueryExtents();
-    filter = crowd.getFilter(0);
+    let ext = crowd.getQueryExtents();
+    let filter = crowd.getFilter(0);
 
     crowd.addAgent([10, 0, 10], ap); //Assign that poPoly to the agent
 
