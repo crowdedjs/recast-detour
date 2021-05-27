@@ -2,16 +2,11 @@
 <html>
 
 <head>
-  <meta charset='utf-8'>
-  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
   <title>Minimal Browser Example</title>
-  <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
 
 <body>
   <canvas id="canv2"></canvas>
-  <canvas id="canv"></canvas>
-
   <script type="module">
 
     import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
@@ -23,51 +18,49 @@
     let Crowd = globalThis.crowded.Crowd;
     let ObstacleAvoidanceParams = globalThis.crowded.ObstacleAvoidanceParams;
 
-    class Agent {
-      inSimulation = false;
-      hasEntered = false;
 
-      getStart() { return [10, 0, 10]; }
-      getEnd() { return [0, 0, 0]; }
-      isActive() { return active; }
-      setActive(active) { this.active = active; }
-    }
+    let inSimulation = false;
+    let hasEntered = false;
 
+
+    let updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
+      | CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
+
+    let query;
+    let crowd;
+
+    let agent;
+    let ext;
+    let filter;
+    let ap;
+    let md;
+    let navmesh;
+    let outStream;
+    let nmd;
 
     class App {
-      static updateFlags = CrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | CrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
-        | CrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | CrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
-      static query;
-      crowd;
 
-      static agent;
-      static ext;
-      static filter;
-      ap;
-      md;
-      navmesh;
-      outStream;
 
       bootMesh(objFileContents) {
-        this.nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
-        this.navmesh = new NavMesh(this.nmd, 6, 0);
-        this.query = new NavMeshQuery(this.navmesh);
-        this.crowd = new Crowd(500, 0.6, this.navmesh);
+        nmd = RecastTestMeshBuilder.fromFile(objFileContents).getMeshData();
+        navmesh = new NavMesh(nmd, 6, 0);
+        query = new NavMeshQuery(navmesh);
+        crowd = new Crowd(500, 0.6, navmesh);
         let params = new ObstacleAvoidanceParams();
         params.velBias = 0.5;
         params.adaptiveDivs = 5;
         params.adaptiveRings = 2;
         params.adaptiveDepth = 1;
-        this.crowd.setObstacleAvoidanceParams(0, params);
+        crowd.setObstacleAvoidanceParams(0, params);
         params = new ObstacleAvoidanceParams();
         params.velBias = 0.5;
         params.adaptiveDivs = 5;
         params.adaptiveRings = 2;
         params.adaptiveDepth = 2;
 
-        this.ap = this.getAgentParams(this.updateFlags);
-        this.ext = this.crowd.getQueryExtents();
-        this.filter = this.crowd.getFilter(0);
+        ap = this.getAgentParams(updateFlags);
+        ext = crowd.getQueryExtents();
+        filter = crowd.getFilter(0);
       }
 
       getAgentParams(updateFlags) {
@@ -101,29 +94,26 @@ f 1//1 3//1 4//1 2//1`;
         let result = `0,  0,       10, 0,  10,     0,    0,    0,  none`;
         let stream = result.split('\n');
 
-        App.agent = new Agent();
         let secondsOfSimulation = 4500;
       }
       tick() {
         let j = 0;
-        let agent = App.agent; //Grab each agent in the list
 
-        if (agent.hasEntered && !agent.inSimulation) return;
+        if (hasEntered && !inSimulation) return;
 
-        if (!agent.hasEntered) {
+        if (!hasEntered) {
           let start = [10, 0, 10];//Get the agent's starting point as a  array
-          let idx = this.crowd.addAgent(start, this.getAgentParams(App.updateFlags)); //Assign that poPoly to the agent
-          agent.idx = idx;
+          crowd.addAgent(start, this.getAgentParams(updateFlags)); //Assign that poPoly to the agent
 
-          let nearest = this.query.findNearestPoly(agent.getEnd(), this.ext, this.filter);
-          this.crowd.requestMoveTarget(agent.idx, nearest.getNearestRef(), nearest.getNearestPos());
-          agent.hasEntered = true;
-          agent.inSimulation = true;
+          let nearest = query.findNearestPoly([0, 0, 0], ext, filter);
+          crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
+          hasEntered = true;
+          inSimulation = true;
         }
-        if (Math.sqrt(this.crowd.getAgent(0).npos[0] ** 2 + this.crowd.getAgent(0).npos[2] ** 2) < 2) App.agent.inSimulation = false;
+        if (Math.sqrt(crowd.getAgent(0).npos[0] ** 2 + crowd.getAgent(0).npos[2] ** 2) < 2) inSimulation = false;
 
-        console.log(`${this.crowd.getAgent(0).npos[0]} ${this.crowd.getAgent(0).npos[2]}`);
-        this.crowd.update(1 / 25.0, null, 0);
+        console.log(`${crowd.getAgent(0).npos[0]} ${crowd.getAgent(0).npos[2]}`);
+        crowd.update(1 / 25.0, null, 0);
       }
     }
 
@@ -138,15 +128,14 @@ f 1//1 3//1 4//1 2//1`;
       let ctx = document.querySelector("#canv2").getContext("2d");
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, 100, 100);
-      let agent = App.agent;
-      let x = app.crowd.getAgent(0).npos[0];
-      let y = app.crowd.getAgent(0).npos[1];
-      let z = app.crowd.getAgent(0).npos[2];
+      let x = crowd.getAgent(0).npos[0];
+      let y = crowd.getAgent(0).npos[1];
+      let z = crowd.getAgent(0).npos[2];
 
       ctx.fillStyle = "white";
       ctx.fillRect(x, z, 10, 10);
     }
-    //main2d();
+
     setInterval(tick, 33);
   </script>
 </body>
