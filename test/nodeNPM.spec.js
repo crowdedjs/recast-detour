@@ -20,8 +20,6 @@ describe("Crowd Simulation", function () {
       let agentStartsFilename = run.csv;
       let _ticks = run.ticks;
 
-      // let app = new NodeApp(objFilename, agentStartsFilename, _ticks);
-      // await app.go();
       crowded(objFilename, agentStartsFilename, _ticks);
 
       let baseFilename = `${objFilename}-${agentStartsFilename}-${_ticks}`;
@@ -32,7 +30,9 @@ describe("Crowd Simulation", function () {
       let out = fs.readFileSync(fullFilename, "utf-8");
       let outExpected = fs.readFileSync(path.join(process.cwd(), `/test/expected/${baseFilename}-expected.csv`), "utf-8");
 
+      //Make sure the out file matches the expected one
       assert.equal(out, outExpected.replace(/\r\n/g, "\n"));
+      //Delete the out file.
       fs.unlinkSync(fullFilename);
     })
 
