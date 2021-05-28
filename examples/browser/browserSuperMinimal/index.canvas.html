@@ -1,0 +1,117 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+  <script src="../../../crowded.js"></script>
+
+  <script>
+
+    let inSimulation = true;
+    let agentStart = [10, 0, 20];
+    let agentEnd = [10, 0, -20];
+    let nmd;
+    let crowd;
+    let ext;
+
+    async function customBoot() {
+      fetchResult = await fetch("../../objs/wings.obj");
+      response = await fetchResult.text();
+
+      let objText = response;
+
+      let CrowdAgentParams = crowded.CrowdAgentParams;
+      
+      let ap = new CrowdAgentParams();
+      ap.radius = 0.6;
+      ap.maxAcceleration = 8.0;
+      ap.maxSpeed = 2.5;
+
+      agentStart = [10, 0, 20];
+      agentEnd = [10, 0, -20];
+
+      nmd = crowded.RecastTestMeshBuilder.fromFile(objText).getMeshData();
+      let navmesh = new crowded.NavMesh(nmd, 6, 0);
+      let query = new crowded.NavMeshQuery(navmesh);
+      crowd = new crowded.Crowd(500, 0.6, navmesh);
+      crowd.setObstacleAvoidanceParams(0, new crowded.ObstacleAvoidanceParams());
+      ext = crowd.getQueryExtents();
+      let filter = crowd.getFilter(0);
+
+      crowd.addAgent(agentStart, ap); //Assign that poPoly to the agent
+
+      let nearest = query.findNearestPoly(agentEnd, ext, filter);
+      crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
+
+      return {
+        initialCameraZoom:5
+      }
+    }
+
+    function customUpdate() {
+      if (!inSimulation) return;
+
+      if (Math.sqrt(
+        (crowd.getAgent(0).npos[0] - agentEnd[0]) ** 2 + (crowd.getAgent(0).npos[2] - agentEnd[2]) ** 2) 
+        < 2) inSimulation = false;
+
+      //console.log(`${crowd.getAgent(0).npos[0]} ${crowd.getAgent(0).npos[2]}`);
+      crowd.update(1 / 25.0, null, 0);
+    }
+
+    function customDraw(ctx) {
+
+      ctx.strokeStyle = "black";
+
+      let bmin = nmd.header.bmin;
+      let bmax = nmd.header.bmax;
+
+      ctx.strokeRect(bmin[0], bmin[2], bmax[0] - bmin[0], bmax[2] - bmin[2]);
+      let x = crowd.getAgent(0).npos[0];
+      let y = crowd.getAgent(0).npos[1];
+      let z = crowd.getAgent(0).npos[2];
+
+
+      ctx.fillStyle = "green";
+      ctx.beginPath();
+      ctx.arc(x, z, 1, 0, Math.PI * 2);
+      ctx.fill();
+
+      //Now draw the navigation mesh data
+      let verts = nmd.verts;
+      let polys = nmd.polys;
+      for (let i = 0; i < verts.length; i += 3) {
+        let x = verts[i];
+        let y = verts[i + 1];
+        let z = verts[i + 2];
+        ctx.fillStyle = "blue";
+        ctx.beginPath();
+        ctx.arc(x, z, 1, 0, Math.PI * 2);
+        ctx.fill();
+
+      }
+      for (let i = 0; i < polys.length; i++) {
+        let poly = polys[i];
+        for (let j = 0; j < poly.vertCount; j++) {
+          ctx.strokeStyle = "black";
+          ctx.beginPath();
+          let index1 = poly.verts[j];
+          let index2 = poly.verts[(j + 1) % poly.vertCount]
+          let x1 = verts[index1 * 3];
+          let x2 = verts[index2 * 3];
+          let y1 = verts[index1 * 3 + 2]
+          let y2 = verts[index2 * 3 + 2]
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+          ctx.stroke();
+        }
+      }
+
+    }
+  </script>
+  <script src="http://127.0.0.1:5501/canvas.js"></script>
+</body>
+
+</html>

@@ -12,87 +12,99 @@
     // import * as crowded from "https://cdn.jsdelivr.net/npm/@crowdedjs/recast-detour/crowded.min.js"
     import * as crowded from "../../../crowded.dev.js"
 
-    let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
-    let inSimulation = false;
+    fetch("../../objs/wings.obj")
+      .then(response => {
+        return response.text();
+      })
+      .then(response => {
+        console.log(response)
+        let objText = response;
 
-    let ap = new CrowdAgentParams();
-    ap.radius = 0.6;
-    ap.maxAcceleration = 8.0;
-    ap.maxSpeed = 2.5; //Originally 3.5f
+        let CrowdAgentParams = globalThis.crowded.CrowdAgentParams;
+        let inSimulation = false;
 
-    let nmd = globalThis.crowded.RecastTestMeshBuilder.fromFile("v 100 0 -100\nv 100 0 100\nv -100 0 -100\nv -100 0 100\nvn 0 1 0\nf 1//1 3//1 4//1 2//1").getMeshData();
-    let navmesh = new globalThis.crowded.NavMesh(nmd, 6, 0);
-    let query = new globalThis.crowded.NavMeshQuery(navmesh);
-    let crowd = new globalThis.crowded.Crowd(500, 0.6, navmesh);
-    crowd.setObstacleAvoidanceParams(0, new globalThis.crowded.ObstacleAvoidanceParams());
-    let ext = crowd.getQueryExtents();
-    let filter = crowd.getFilter(0);
+        let ap = new CrowdAgentParams();
+        ap.radius = 0.6;
+        ap.maxAcceleration = 8.0;
+        ap.maxSpeed = 2.5; 
 
-    crowd.addAgent([10, 0, 10], ap); //Assign that poPoly to the agent
+        let agentStart = [10,0,20];
+        let agentEnd = [10,0,-20];
 
-    let nearest = query.findNearestPoly([0, 0, 0], ext, filter);
-    crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
-    inSimulation = true;
+        let nmd = globalThis.crowded.RecastTestMeshBuilder.fromFile(objText).getMeshData();
+        let navmesh = new globalThis.crowded.NavMesh(nmd, 6, 0);
+        let query = new globalThis.crowded.NavMeshQuery(navmesh);
+        let crowd = new globalThis.crowded.Crowd(500, 0.6, navmesh);
+        crowd.setObstacleAvoidanceParams(0, new globalThis.crowded.ObstacleAvoidanceParams());
+        let ext = crowd.getQueryExtents();
+        let filter = crowd.getFilter(0);
 
-    let ctx = document.querySelector("#canv2").getContext("2d");
+        crowd.addAgent(agentStart, ap); //Assign that poPoly to the agent
 
-    function update() {
-      if (!inSimulation) return;
+        let nearest = query.findNearestPoly(agentEnd, ext, filter);
+        crowd.requestMoveTarget(0, nearest.getNearestRef(), nearest.getNearestPos());
+        inSimulation = true;
 
-      if (Math.sqrt(crowd.getAgent(0).npos[0] ** 2 + crowd.getAgent(0).npos[2] ** 2) < 2) inSimulation = false;
+        let ctx = document.querySelector("#canv2").getContext("2d");
 
-      console.log(`${crowd.getAgent(0).npos[0]} ${crowd.getAgent(0).npos[2]}`);
-      crowd.update(1 / 25.0, null, 0);
-    }
+        function update() {
+          if (!inSimulation) return;
 
-    function draw() {
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, 500, 500);
-      let x = crowd.getAgent(0).npos[0];
-      let y = crowd.getAgent(0).npos[1];
-      let z = crowd.getAgent(0).npos[2];
+          if (Math.sqrt(crowd.getAgent(0).npos[0] ** 2 + crowd.getAgent(0).npos[2] ** 2) < 2) inSimulation = false;
 
-      ctx.save();
-      ctx.translate(250, 250)
-      ctx.scale(2, 2)
-      ctx.fillStyle = "white";
-      ctx.beginPath();
-      ctx.arc(x, z, 1, 0, Math.PI * 2);
-      ctx.fill();
-      
-      //Now draw the navigation mesh data
-      let verts = nmd.verts;
-      let polys = nmd.polys;
-      for (let i = 0; i < verts.length; i += 3) {
-        let x = verts[i];
-        let y = verts[i + 1];
-        let z = verts[i + 2];
-        ctx.fillStyle = "blue";
-        ctx.beginPath();
-        ctx.arc(x, z, 1, 0, Math.PI * 2);
-        ctx.fill();
-        
-      }
-      for(let i = 0; i < polys.length; i++){
-        let poly = polys[i];
-        for(let j = 0; j < poly.vertCount; j++){
-          ctx.strokeStyle="azure";
-          ctx.beginPath();
-          let index1 = poly.verts[j];
-          let index2 = poly.verts[(j+1)%poly.vertCount]
-          let x1 = verts[index1*3];
-          let x2 = verts[index2*3];
-          let y1 = verts[index1*3+2]
-          let y2 = verts[index2*3+2]
-          ctx.moveTo(x1, y1)
-          ctx.lineTo(x2, y2)
-          ctx.stroke();
+          //console.log(`${crowd.getAgent(0).npos[0]} ${crowd.getAgent(0).npos[2]}`);
+          crowd.update(1 / 25.0, null, 0);
         }
-      }
-      ctx.restore();
-    }
 
-    setInterval(() => { draw(); update(); }, 33);
+        function draw() {
+          ctx.fillStyle = "black";
+          ctx.fillRect(0, 0, 500, 500);
+          let x = crowd.getAgent(0).npos[0];
+          let y = crowd.getAgent(0).npos[1];
+          let z = crowd.getAgent(0).npos[2];
+
+          ctx.save();
+          ctx.translate(250, 250)
+          ctx.scale(2, 2)
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.arc(x, z, 1, 0, Math.PI * 2);
+          ctx.fill();
+
+          //Now draw the navigation mesh data
+          let verts = nmd.verts;
+          let polys = nmd.polys;
+          for (let i = 0; i < verts.length; i += 3) {
+            let x = verts[i];
+            let y = verts[i + 1];
+            let z = verts[i + 2];
+            ctx.fillStyle = "blue";
+            ctx.beginPath();
+            ctx.arc(x, z, 1, 0, Math.PI * 2);
+            ctx.fill();
+
+          }
+          for (let i = 0; i < polys.length; i++) {
+            let poly = polys[i];
+            for (let j = 0; j < poly.vertCount; j++) {
+              ctx.strokeStyle = "azure";
+              ctx.beginPath();
+              let index1 = poly.verts[j];
+              let index2 = poly.verts[(j + 1) % poly.vertCount]
+              let x1 = verts[index1 * 3];
+              let x2 = verts[index2 * 3];
+              let y1 = verts[index1 * 3 + 2]
+              let y2 = verts[index2 * 3 + 2]
+              ctx.moveTo(x1, y1)
+              ctx.lineTo(x2, y2)
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+        }
+
+        setInterval(() => { draw(); update(); }, 33);
+      })
   </script>
 </body>
 
