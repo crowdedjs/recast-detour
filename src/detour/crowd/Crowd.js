@@ -104,8 +104,7 @@ class Crowd {
         return DetourCommon.clamp((t - t0) / (t1 - t0), 0.0, 1.0);
     }
 
-    getNeighbours(pos, height, range, skip, agents,
-        grid) {
+    getNeighbours(pos, height, range, skip, agents, grid) {
 
         let result = [];
         let ids = grid.queryItems(pos[0] - range, pos[2] - range, pos[0] + range, pos[2] + range);

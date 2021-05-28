@@ -4,6 +4,7 @@ const assert = chai.assert;
 import crowded from "../examples/node/nodeNPM/crowded.js"
 import fs from "fs";
 import path from "path";
+import {performance} from "perf_hooks";
 
 
 describe("Crowd Simulation", function () {
@@ -13,14 +14,18 @@ describe("Crowd Simulation", function () {
 
   ]
   for (let run of runs) {
+
     it(`Runs ${run.obj} ${run.csv} ${run.ticks}`, async function () {
       this.timeout(10000);
-
+      
       let objFilename = run.obj;
       let agentStartsFilename = run.csv;
       let _ticks = run.ticks;
-
+      
+      let start = performance.now();
       crowded(objFilename, agentStartsFilename, _ticks);
+      let end = performance.now();
+      console.log(end - start);
 
       let baseFilename = `${objFilename}-${agentStartsFilename}-${_ticks}`;
 

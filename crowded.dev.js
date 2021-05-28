@@ -15359,17 +15359,22 @@
 
 		m_cellSize;
 		m_invCellSize;
-		items = {};
+		// Optimization
+		//items = {};
+		items = new Map();
 		m_bounds = new Array(4);
 
 		constructor(m_cellSize, m_invCellSize) {
 			this.m_cellSize = m_cellSize;
 			this.m_invCellSize = m_invCellSize;
-			this.items = {};
+			//this.items = {};
+			//TODO: I think this line can be removed, it's redundant
+			this.items = new Map();
 		}
 
 		clear() {
-			this.items = {};
+			//this.items = {};
+			this.items = new Map();
 			this.m_bounds[0] = 0xfff;
 			this.m_bounds[1] = 0xfff;
 			this.m_bounds[2] = -0xfff;
@@ -15390,10 +15395,12 @@
 			for (let y = iminy; y <= imaxy; ++y) {
 				for (let x = iminx; x <= imaxx; ++x) {
 					let key = new ProximityGrid.ItemKey(x, y);
-					let ids = this.items[JSON.stringify(key)];
+					//let ids = this.items[JSON.stringify(key)];
+					let ids = this.items.get(key);
 					if (ids == null) {
 						ids = [];
-						this.items[JSON.stringify(key)]= ids;
+						//this.items[JSON.stringify(key)]= ids;
+						this.items.set(key, ids);
 					}
 					ids.push(id);
 				}
@@ -15410,7 +15417,8 @@
 			for (let y = iminy; y <= imaxy; ++y) {
 				for (let x = iminx; x <= imaxx; ++x) {
 					let key = new ProximityGrid.ItemKey(x, y);
-					let ids = this.items[JSON.stringify(key)];
+					//let ids = this.items[JSON.stringify(key)];
+					let ids = this.items.get(key);
 					if (ids != null) {
 						result.add(...ids);
 					}
@@ -15422,7 +15430,8 @@
 
 		getItemCountAt(x, y) {
 			key = new ItemKey(x, y);
-			ids = this.items[key];
+			ids = this.items.get(key);
+			//ids = this.items[key];
 			return ids != null ? ids.length : 0;
 		}
 	}
@@ -16693,8 +16702,7 @@
 	        return DetourCommon.clamp((t - t0) / (t1 - t0), 0.0, 1.0);
 	    }
 
-	    getNeighbours(pos, height, range, skip, agents,
-	        grid) {
+	    getNeighbours(pos, height, range, skip, agents, grid) {
 
 	        let result = [];
 	        let ids = grid.queryItems(pos[0] - range, pos[2] - range, pos[0] + range, pos[2] + range);
