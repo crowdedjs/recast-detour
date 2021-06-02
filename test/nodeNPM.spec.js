@@ -1,7 +1,8 @@
 import chai from "chai";
 const assert = chai.assert;
 // import NodeApp from "../examples/nodeNPM/NodeApp.js"
-import crowded from "../examples/node/nodeNPM/crowded.js"
+//import crowded from "../examples/node/nodeNPM/crowded.js"
+import crowded from "./crowded.js"
 import fs from "fs";
 import path from "path";
 import {performance} from "perf_hooks";
