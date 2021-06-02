@@ -9,7 +9,8 @@ function crowded(objFilename, agentStartsFilename, ticks){
 
   let app = new NodeApp(obj, agents, ticks);
   let result = app.go();
-  fs.writeFileSync(`${objFilename}-${agentStartsFilename}-${ticks}-out.csv`, result);
+  //fs.writeFileSync(`${objFilename}-${agentStartsFilename}-${ticks}-out.csv`, result);
+  return result;
 }
 
 //module.exports = crowded;
