@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --no-diff",
     "rollup": "npx rollup -c rollup.config.js",
     "rollup:dev": "npx rollup -c rollup.dev.config.js",
     "release:patch": "npx changelog -p && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin master && git push origin master --tags"

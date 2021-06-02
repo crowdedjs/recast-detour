@@ -9,7 +9,7 @@ import {performance} from "perf_hooks";
 
 describe("Crowd Simulation", function () {
   let runs = [
-    { obj: "hospital.obj", csv: "nine.csv", ticks: 500 },
+    { obj: "hospital.obj", csv: "nine.csv", ticks: 1000 },
     { obj: "hospital.obj", csv: "one.csv", ticks: 500 },
 
   ]
