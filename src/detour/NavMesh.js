@@ -22,7 +22,7 @@ import DetourCommon from "./DetourCommon.js"
 import MeshTile from "./MeshTile.js"
 import Poly from "./Poly.js"
 import Link from "./Link.js"
-import ClosesPointOnPolyResult from "./ClosestPointOnPolyResult.js"
+import ClosestPointOnPolyResult from "./ClosestPointOnPolyResult.js"
 import FindNearestPolyResult from "./FindNearestPolyResult.js"
 
 function arraycopy(one, oneStart, two, twoStart, len) {
@@ -995,7 +995,7 @@ class NavMesh {
 			let d1 = DetourCommon.vDist3(pos, tile.data.verts, v1);
 			let u = d0 / (d0 + d1);
 			let closest = DetourCommon.vLerp4(tile.data.verts, v0, v1, u);
-			return new ClosesPointOnPolyResult(false, closest);
+			return new ClosestPointOnPolyResult(false, closest);
 		}
 
 		// Clamp poPoly to be inside the polygon.
@@ -1056,7 +1056,7 @@ class NavMesh {
 				}
 			}
 		}
-		return new ClosesPointOnPolyResult(posOverPoly, closest);
+		return new ClosestPointOnPolyResult(posOverPoly, closest);
 	}
 
 	findNearestPolyInTile(tile, center, extents) {

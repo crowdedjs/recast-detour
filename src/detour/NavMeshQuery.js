@@ -390,7 +390,7 @@ class NavMeshQuery {
 			let d1 = DetourCommon.vDist3(pos, tile.data.verts, v1);
 			let u = d0 / (d0 + d1);
 			let closest = DetourCommon.vLerp4(tile.data.verts, v0, v1, u);
-			return new ClosesPointOnPolyResult(false, closest);
+			return new ClosestPointOnPolyResult(false, closest);
 		}
 
 		// Clamp poPoly to be inside the polygon.
