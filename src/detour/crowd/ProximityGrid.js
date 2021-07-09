@@ -59,22 +59,17 @@ class ProximityGrid {
 
 	m_cellSize;
 	m_invCellSize;
-	// Optimization
-	//items = {};
-	items = new Map();
+	items = {};
 	m_bounds = new Array(4);
 
 	constructor(m_cellSize, m_invCellSize) {
 		this.m_cellSize = m_cellSize;
 		this.m_invCellSize = m_invCellSize;
-		//this.items = {};
-		//TODO: I think this line can be removed, it's redundant
-		this.items = new Map();
+		this.items = {};
 	}
 
 	clear() {
-		//this.items = {};
-		this.items = new Map();
+		this.items = {};
 		this.m_bounds[0] = 0xfff;
 		this.m_bounds[1] = 0xfff;
 		this.m_bounds[2] = -0xfff;
@@ -94,17 +89,20 @@ class ProximityGrid {
 
 		for (let y = iminy; y <= imaxy; ++y) {
 			for (let x = iminx; x <= imaxx; ++x) {
-				let key = new ProximityGrid.ItemKey(x, y);
-				//let ids = this.items[JSON.stringify(key)];
-				let ids = this.items.get(key);
+				//let key = new ProximityGrid.ItemKey(x, y);
+				let _string = this.stringIt(x,y);
+				let ids = this.items[_string];
 				if (ids == null) {
 					ids = [];
-					//this.items[JSON.stringify(key)]= ids;
-					this.items.set(key, ids);
+					this.items[_string]= ids;
 				}
 				ids.push(id);
 			}
 		}
+	}
+
+	stringIt(x,y){
+		return x + "," + y;
 	}
 
 	queryItems(minx, miny, maxx, maxy) {
@@ -116,9 +114,10 @@ class ProximityGrid {
 		let result = new Set();
 		for (let y = iminy; y <= imaxy; ++y) {
 			for (let x = iminx; x <= imaxx; ++x) {
-				let key = new ProximityGrid.ItemKey(x, y);
-				//let ids = this.items[JSON.stringify(key)];
-				let ids = this.items.get(key);
+				let _string = this.stringIt(x,y);
+				
+				//let key = new ProximityGrid.ItemKey(x, y);
+				let ids = this.items[_string];
 				if (ids != null) {
 					result.add(...ids);
 				}
@@ -130,8 +129,7 @@ class ProximityGrid {
 
 	getItemCountAt(x, y) {
 		key = new ItemKey(x, y);
-		ids = this.items.get(key);
-		//ids = this.items[key];
+		ids = this.items[key];
 		return ids != null ? ids.length : 0;
 	}
 }

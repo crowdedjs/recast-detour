@@ -1444,12 +1444,9 @@
         var salt;
         var it;
         var ip;
-        var saltMask = NavMesh.lshift(1, NavMesh.DT_SALT_BITS) - 1;
-        var tileMask = NavMesh.lshift(1, NavMesh.DT_TILE_BITS) - 1;
-        var polyMask = NavMesh.lshift(1, NavMesh.DT_POLY_BITS) - 1;
-        salt = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS + NavMesh.DT_TILE_BITS), saltMask));
-        it = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS), tileMask));
-        ip = Math.floor(NavMesh.and(ref, polyMask));
+        salt = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS + NavMesh.DT_TILE_BITS), this.saltMask));
+        it = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS), this.tileMask));
+        ip = Math.floor(NavMesh.and(ref, this.polyMask));
         return [salt, it, ip];
       } /// Extracts a tile's salt value from the specified polygon reference.
       /// @note This function is generally meant for internal use only.
@@ -2513,6 +2510,12 @@
   _defineProperty(NavMesh, "DT_TILE_BITS", 28);
 
   _defineProperty(NavMesh, "DT_POLY_BITS", 20);
+
+  _defineProperty(NavMesh, "saltMask", NavMesh.lshift(1, NavMesh.DT_SALT_BITS) - 1);
+
+  _defineProperty(NavMesh, "tileMask", NavMesh.lshift(1, NavMesh.DT_TILE_BITS) - 1);
+
+  _defineProperty(NavMesh, "polyMask", NavMesh.lshift(1, NavMesh.DT_POLY_BITS) - 1);
 
   _defineProperty(NavMesh, "DT_EXT_LINK", 0x8000);
 
@@ -12678,7 +12681,7 @@
 
           var _closest = DetourCommon.vLerp4(tile.data.verts, _v, _v2, _u);
 
-          return new ClosesPointOnPolyResult(false, _closest);
+          return new ClosestPointOnPolyResult(false, _closest);
         } // Clamp poPoly to be inside the polygon.
 
 
@@ -15684,8 +15687,6 @@
   3. This notice may not be removed or altered from any source distribution.
   */
   var ProximityGrid = /*#__PURE__*/function () {
-    // Optimization
-    //items = {};
     function ProximityGrid(m_cellSize, m_invCellSize) {
       _classCallCheck(this, ProximityGrid);
 
@@ -15693,22 +15694,19 @@
 
       _defineProperty(this, "m_invCellSize", void 0);
 
-      _defineProperty(this, "items", new Map());
+      _defineProperty(this, "items", {});
 
       _defineProperty(this, "m_bounds", new Array(4));
 
       this.m_cellSize = m_cellSize;
-      this.m_invCellSize = m_invCellSize; //this.items = {};
-      //TODO: I think this line can be removed, it's redundant
-
-      this.items = new Map();
+      this.m_invCellSize = m_invCellSize;
+      this.items = {};
     }
 
     _createClass(ProximityGrid, [{
       key: "clear",
       value: function clear() {
-        //this.items = {};
-        this.items = new Map();
+        this.items = {};
         this.m_bounds[0] = 0xfff;
         this.m_bounds[1] = 0xfff;
         this.m_bounds[2] = -0xfff;
@@ -15728,20 +15726,24 @@
 
         for (var _y = iminy; _y <= imaxy; ++_y) {
           for (var _x = iminx; _x <= imaxx; ++_x) {
-            var _key = new ProximityGrid.ItemKey(_x, _y); //let ids = this.items[JSON.stringify(key)];
+            //let key = new ProximityGrid.ItemKey(x, y);
+            var _string = this.stringIt(_x, _y);
 
-
-            var _ids = this.items.get(_key);
+            var _ids = this.items[_string];
 
             if (_ids == null) {
-              _ids = []; //this.items[JSON.stringify(key)]= ids;
-
-              this.items.set(_key, _ids);
+              _ids = [];
+              this.items[_string] = _ids;
             }
 
             _ids.push(id);
           }
         }
+      }
+    }, {
+      key: "stringIt",
+      value: function stringIt(x, y) {
+        return x + "," + y;
       }
     }, {
       key: "queryItems",
@@ -15754,10 +15756,10 @@
 
         for (var _y2 = iminy; _y2 <= imaxy; ++_y2) {
           for (var _x2 = iminx; _x2 <= imaxx; ++_x2) {
-            var _key2 = new ProximityGrid.ItemKey(_x2, _y2); //let ids = this.items[JSON.stringify(key)];
+            var _string = this.stringIt(_x2, _y2); //let key = new ProximityGrid.ItemKey(x, y);
 
 
-            var _ids2 = this.items.get(_key2);
+            var _ids2 = this.items[_string];
 
             if (_ids2 != null) {
               result.add.apply(result, _toConsumableArray(_ids2));
@@ -15771,8 +15773,7 @@
       key: "getItemCountAt",
       value: function getItemCountAt(x, y) {
         key = new ItemKey(x, y);
-        ids = this.items.get(key); //ids = this.items[key];
-
+        ids = this.items[key];
         return ids != null ? ids.length : 0;
       }
     }]);

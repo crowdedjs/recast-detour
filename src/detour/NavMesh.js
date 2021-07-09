@@ -37,6 +37,10 @@ class NavMesh {
 	static DT_TILE_BITS = 28;
 	static DT_POLY_BITS = 20;
 
+	static saltMask = NavMesh.lshift(1, NavMesh.DT_SALT_BITS) - 1;
+	static tileMask = NavMesh.lshift(1, NavMesh.DT_TILE_BITS) - 1;
+	static polyMask = NavMesh.lshift(1, NavMesh.DT_POLY_BITS) - 1;
+
 	/// A flag that indicates that an entity links to an external entity.
 	/// (E.g. A polygon edge is a portal that links to another polygon.)
 	static DT_EXT_LINK = 0x8000;
@@ -161,12 +165,10 @@ class NavMesh {
 		let salt;
 		let it;
 		let ip;
-		let saltMask = NavMesh.lshift(1, NavMesh.DT_SALT_BITS) - 1;
-		let tileMask = NavMesh.lshift(1, NavMesh.DT_TILE_BITS) - 1;
-		let polyMask = NavMesh.lshift(1, NavMesh.DT_POLY_BITS) - 1;
-		salt = Math.floor(NavMesh.and(NavMesh.rshift(ref, (NavMesh.DT_POLY_BITS + NavMesh.DT_TILE_BITS)), saltMask));
-		it = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS), tileMask));
-		ip = Math.floor(NavMesh.and(ref, polyMask));
+
+		salt = Math.floor(NavMesh.and(NavMesh.rshift(ref, (NavMesh.DT_POLY_BITS + NavMesh.DT_TILE_BITS)), this.saltMask));
+		it = Math.floor(NavMesh.and(NavMesh.rshift(ref, NavMesh.DT_POLY_BITS), this.tileMask));
+		ip = Math.floor(NavMesh.and(ref, this.polyMask));
 		return [salt, it, ip];
 	}
 
